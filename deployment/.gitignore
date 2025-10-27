@@ -1,0 +1,70 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-wheel-metadata/
+
+# --- Virtual Environment ---
+venv/
+env/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Jupyter Notebooks ---
+.ipynb_checkpoints/
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- System files ---
+.DS_Store
+Thumbs.db
+
+# --- Logs & Caches ---
+*.log
+*.out
+*.tmp
+*.cache
+__pycache__/
+
+# --- Gradio & Hugging Face Spaces ---
+*.gradio
+.gradio/
+.gradio_cache/
+gradio_cache/
+outputs/
+runs/
+uploads/
+
+
+
+# --- Dataset ---
+data/
+datasets/
+*.zip
+*.tar
+*.tar.gz
+
+# --- Environment & Config ---
+.env
+.env.*
+*.yaml
+*.yml
+config.json
+
+# --- Others ---
+*.bak
+*.old
+*.orig
