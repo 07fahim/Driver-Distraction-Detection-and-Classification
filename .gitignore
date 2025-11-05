@@ -1,3 +1,5 @@
+# SafeDrive AI - .gitignore
+
 # --- Python ---
 __pycache__/
 *.py[cod]
@@ -27,17 +29,24 @@ venv.bak/
 .idea/
 *.swp
 *.swo
+*~
 
 # --- System files ---
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # --- Logs & Caches ---
 *.log
 *.out
 *.tmp
 *.cache
-__pycache__/
+logs/
+
+# --- Flask ---
+instance/
+.webassets-cache
+.pytest_cache/
 
 # --- Gradio & Hugging Face Spaces ---
 *.gradio
@@ -47,8 +56,8 @@ gradio_cache/
 outputs/
 runs/
 uploads/
-
-
+temp/
+tmp/
 
 # --- Dataset ---
 data/
@@ -56,15 +65,49 @@ datasets/
 *.zip
 *.tar
 *.tar.gz
+*.rar
+*.7z
+
+# --- Uploaded Files (Temporary) ---
+static/uploads/
+static/temp/
+uploaded_images/
+uploaded_videos/
+processed_videos/
 
 # --- Environment & Config ---
 .env
 .env.*
+.env.local
+.env.production
 *.yaml
 *.yml
 config.json
+secrets.json
+
+
+# --- Testing ---
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# --- Documentation Build ---
+docs/_build/
+site/
 
 # --- Others ---
 *.bak
 *.old
 *.orig
+.sass-cache/
+node_modules/
+package-lock.json
+
+# --- Keep these files ---
+!.gitkeep
+!requirements.txt
+!README.md

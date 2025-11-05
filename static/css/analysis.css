@@ -1,0 +1,239 @@
+/* ========================================
+   SAFEDRIVE AI - ANALYSIS COMPONENTS
+   Dashboard, Tables, Statistics
+   ======================================== */
+
+/* ========================================
+   SUMMARY STATISTICS CARDS
+   ======================================== */
+.stat-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    border: 1px solid rgba(52, 211, 153, 0.2);
+}
+
+.stat-card h3 {
+    font-size: 2rem;
+    margin-bottom: 0.3rem;
+    color: #34d399;
+    font-weight: 900;
+}
+
+.stat-card p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* ========================================
+   DETECTION DETAILS TABLE
+   ======================================== */
+.table-container {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.detection-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.detection-details-table thead {
+    background: rgba(52, 211, 153, 0.2);
+}
+
+.detection-details-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: #34d399;
+    border-bottom: 2px solid rgba(52, 211, 153, 0.3);
+}
+
+.detection-details-table td {
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detection-details-table tbody tr {
+    transition: all 0.3s;
+    animation: slideIn 0.5s ease;
+}
+
+.detection-details-table tbody tr:hover {
+    background: rgba(52, 211, 153, 0.1);
+}
+
+/* ========================================
+   BADGES & LABELS
+   ======================================== */
+.behavior-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.confidence-badge {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+    border-radius: 20px;
+    font-weight: 700;
+}
+
+.bbox-code {
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+}
+
+/* ========================================
+   VIDEO SUMMARY CARDS
+   ======================================== */
+.summary-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    border-left: 4px solid #34d399;
+    animation: slideIn 0.5s ease;
+}
+
+.summary-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+
+.summary-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.summary-card-badge {
+    background: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.summary-card-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.8rem;
+    font-size: 0.85rem;
+}
+
+.summary-card-detail {
+    display: flex;
+    flex-direction: column;
+}
+
+.summary-card-detail-label {
+    opacity: 0.7;
+    font-size: 0.75rem;
+    margin-bottom: 0.2rem;
+}
+
+.summary-card-detail-value {
+    font-weight: 700;
+    color: #34d399;
+}
+
+/* ========================================
+   ABOUT PAGE CONTENT
+   ======================================== */
+.about-content {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 3rem;
+    line-height: 1.8;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-content h2 {
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #34d399;
+}
+
+.about-content p {
+    margin-bottom: 1rem;
+}
+
+.about-content ul {
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.about-content li {
+    margin-bottom: 0.5rem;
+}
+
+.about-content a {
+    color: #34d399;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.about-content a:hover {
+    color: #10b981;
+    text-decoration: underline;
+}
+
+/* ========================================
+   RESPONSIVE - ANALYSIS COMPONENTS
+   ======================================== */
+@media (max-width: 768px) {
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .detection-details-table {
+        font-size: 0.85rem;
+    }
+
+    .detection-details-table th,
+    .detection-details-table td {
+        padding: 0.6rem;
+    }
+
+    .summary-card-details {
+        grid-template-columns: 1fr;
+    }
+
+    .about-content {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .table-container {
+        overflow-x: scroll;
+    }
+
+    .summary-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+}

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeDrive AI - AI-Powered Driver Safety</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <i class="fas fa-car"></i>
+            SafeDrive AI
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/image">Image Detection</a></li>
+            <li><a href="/video">Video Detection</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>AI-Powered Driver Safety</h1>
+        <p class="hero-subtitle">Detect distracted driving behaviors in real-time using advanced computer vision technology</p>
+        <div class="cta-buttons">
+            <a href="/image" class="btn btn-primary">
+                Try Image Detection
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <a href="/video" class="btn btn-secondary">
+                Try Video Detection
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <h3>Real-Time Detection</h3>
+                <p>Instantly identify distracted driving behaviors including phone use, drowsiness, and more</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3>Highly Accurate</h3>
+                <p>State-of-the-art computer vision ensures precise detection with confidence scores</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-list-check"></i>
+                </div>
+                <h3>12 Behaviors</h3>
+                <p>Detects texting, phone calls, drowsiness, and more</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3>Image & Video</h3>
+                <p>Process single images or entire video streams</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Detailed Analytics</h3>
+                <p>Get confidence scores and detection statistics</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <h3>Safety First</h3>
+                <p>Designed to improve road safety and prevent accidents</p>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="how-it-works">
+            <h2>How It Works</h2>
+            <div class="steps-grid">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>Upload</h3>
+                    <p>Upload an image or video of driver behavior</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>Detect</h3>
+                    <p>Identify distracted driving behaviors</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>Annotate</h3>
+                    <p>Mark detected behaviors</p>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>Review</h3>
+                    <p>Get detailed results with confidence scores</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

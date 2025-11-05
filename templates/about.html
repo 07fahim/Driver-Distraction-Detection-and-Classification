@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - SafeDrive AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <i class="fas fa-car"></i>
+            SafeDrive AI
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/image">Image Detection</a></li>
+            <li><a href="/video">Video Detection</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1><i class="fas fa-info-circle"></i> About SafeDrive AI</h1>
+        
+        <div class="about-content">
+            <p>SafeDrive AI is an advanced artificial intelligence system designed to detect and prevent driver distractions in real-time. Our mission is to make roads safer by identifying dangerous driving behaviors before they lead to accidents.</p>
+
+            <h2><i class="fas fa-bullseye"></i> Our Mission</h2>
+            <p>Driver distraction is one of the leading causes of road accidents worldwide. According to the National Highway Traffic Safety Administration (NHTSA), distracted driving claimed 3,142 lives in 2020 alone. SafeDrive AI aims to reduce these statistics by providing real-time detection and alerts for dangerous behaviors.</p>
+
+            <h2><i class="fas fa-brain"></i> Detection Capabilities</h2>
+            <p>SafeDrive AI uses state-of-the-art YOLO (You Only Look Once) ONNX deep learning models trained on thousands of images to detect <strong>12 different types</strong> of driver distractions:</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin: 1.5rem 0;">
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-check-circle" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c0 - Safe Driving</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Baseline safe behavior</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-mobile-alt" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c1 - Texting</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Reading or writing messages</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-phone" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c2 - Phone Call</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Talking on the phone</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-broadcast-tower" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c3 - Radio Operation</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Adjusting radio/controls</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-glass-water" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c4 - Drinking</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Consuming beverages</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-hand-pointer" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c5 - Reaching Behind</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Reaching for backseat items</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-wand-magic-sparkles" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c6 - Hair & Makeup</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Grooming while driving</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-users" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>c7 - Talking to Passenger</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Conversing with passengers</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-eye-slash" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>d0 - Eyes Closed</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Closed eyes detected</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-face-tired" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>d1 - Yawning</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Fatigue indicators</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-bed" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>d2 - Nodding Off</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Drowsiness detection</p>
+                </div>
+                
+                <div class="feature-card" style="padding: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.5rem;">
+                        <i class="fas fa-eye" style="color: #34d399; font-size: 1.2rem;"></i>
+                        <strong>d3 - Eyes Open</strong>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0;">Alert state monitoring</p>
+                </div>
+            </div>
+
+            <h2><i class="fas fa-cogs"></i> How It Works</h2>
+            <p>SafeDrive AI employs a sophisticated three-stage process to ensure accurate and reliable detection:</p>
+            
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 15px; margin: 1rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-1"></i> Image Preprocessing</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Images are resized to <strong>640×640 pixels</strong> for optimal model performance</li>
+                    <li>Color space conversion from BGR to RGB</li>
+                    <li>Normalization (pixel values scaled to 0-1 range)</li>
+                    <li>Tensor transformation (HWC to CHW format)</li>
+                </ul>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 15px; margin: 1rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-2"></i> YOLO ONNX Inference</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Model:</strong> Custom-trained YOLO model exported to ONNX format</li>
+                    <li><strong>Runtime:</strong> ONNX Runtime with CPU provider for maximum compatibility</li>
+                    <li><strong>Output:</strong> Detection predictions with confidence scores and class IDs</li>
+                    <li><strong>Confidence Threshold:</strong> 25% minimum to filter low-confidence detections</li>
+                    <li><strong>Local Processing:</strong> All inference runs locally for faster response times</li>
+                </ul>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 1.5rem; border-radius: 15px; margin: 1rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-3"></i> Results Visualization</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li>Text overlays displaying detected behaviors at the bottom of images/videos</li>
+                    <li>Black background with white text for maximum readability</li>
+                    <li>Sorted by confidence (highest confidence displayed first)</li>
+                    <li>Frame counter for video processing</li>
+                    <li>Confidence percentage display for each detection</li>
+                </ul>
+            </div>
+
+            <h2><i class="fas fa-microchip"></i> Technical Architecture</h2>
+            <p>Our system is built using cutting-edge technologies and follows best practices:</p>
+            <ul>
+                <li><strong>Deep Learning Framework:</strong> YOLO (You Only Look Once) - Industry-leading object detection</li>
+                <li><strong>Model Format:</strong> ONNX (Open Neural Network Exchange) for cross-platform compatibility</li>
+                <li><strong>Backend:</strong> Flask web framework with Python 3.x</li>
+                <li><strong>Inference Engine:</strong> ONNX Runtime with optimized CPU execution (local processing)</li>
+                <li><strong>Computer Vision:</strong> OpenCV (cv2) for image/video processing</li>
+                <li><strong>Frontend:</strong> Modern HTML5, CSS3, and vanilla JavaScript</li>
+            </ul>
+
+            <h2><i class="fas fa-chart-line"></i> Interactive Dashboards</h2>
+            <p>SafeDrive AI provides comprehensive analytics through interactive dashboards:</p>
+            <ul>
+                <li><strong>Image Detection:</strong> Real-time detection with behavior class and confidence scores displayed as text overlays</li>
+                <li><strong>Video Processing:</strong> Frame-by-frame analysis with detection summaries including:
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+                        <li>Total detection counts per behavior</li>
+                        <li>Average confidence scores</li>
+                        <li>Frame ranges where behaviors occur</li>
+                        <li>Duration of each detected behavior</li>
+                    </ul>
+                </li>
+                <li><strong>Summary Statistics:</strong> Visual stat cards showing total detections and unique behaviors</li>
+                <li><strong>Detection Tables:</strong> Detailed tabular data with class names, confidence percentages, and bounding box coordinates</li>
+            </ul>
+
+            <h2><i class="fas fa-shield-alt"></i> Key Features</h2>
+            <ul>
+                <li><strong>Real-Time Detection:</strong> Process images and videos with millisecond-level inference</li>
+                <li><strong>High Accuracy:</strong> Trained on extensive datasets with rigorous validation</li>
+                <li><strong>12 Behavior Classes:</strong> Comprehensive coverage of common driver distractions</li>
+                <li><strong>Visual Feedback:</strong> Clean text overlays with confidence scores</li>
+                <li><strong>Detailed Analytics:</strong> Interactive tables and summary cards for in-depth analysis</li>
+                <li><strong>Video Processing:</strong> Frame-by-frame analysis with temporal behavior tracking</li>
+                <li><strong>Local Processing:</strong> Fast inference without API calls or network dependency</li>
+                <li><strong>Privacy-Focused:</strong> Secure processing with automatic temporary file cleanup</li>
+            </ul>
+
+            <h2><i class="fas fa-users"></i> Who Can Benefit</h2>
+            <ul>
+                <li><strong>Fleet Management Companies:</strong> Monitor driver behavior across entire fleets for safety compliance</li>
+                <li><strong>Insurance Companies:</strong> Assess risk profiles and reward safe driving with lower premiums</li>
+                <li><strong>Automotive Manufacturers:</strong> Integrate advanced driver monitoring into vehicle safety systems</li>
+                <li><strong>Transportation Agencies:</strong> Enhance public transport safety with continuous monitoring</li>
+                <li><strong>Driving Schools:</strong> Train new drivers with real-time feedback and behavior correction</li>
+                <li><strong>Individual Drivers:</strong> Self-monitor and improve driving habits for personal safety</li>
+                <li><strong>Research Institutions:</strong> Study driver behavior patterns and develop safety interventions</li>
+            </ul>
+
+            <h2><i class="fas fa-rocket"></i> Deployment</h2>
+            <p>SafeDrive AI offers flexible deployment options:</p>
+            <ul>
+                <li><strong>Hugging Face Spaces:</strong> Interactive Gradio interface available at <a href="https://huggingface.co/spaces/yeager07/distracted-driving-detection" target="_blank" style="color: #34d399;">yeager07/distracted-driving-detection</a></li>
+                <li><strong>Local Deployment:</strong> Flask-based web application using local ONNX inference for faster response times</li>
+                <li><strong>High Performance:</strong> Optimized for CPU execution with minimal latency</li>
+                <li><strong>No API Dependency:</strong> All processing runs locally for maximum speed and reliability</li>
+                <li><strong>Easy Integration:</strong> RESTful API endpoints for seamless integration into existing systems</li>
+            </ul>
+
+            <h2><i class="fas fa-envelope"></i> Contact & Support</h2>
+            <p>For more information, partnership opportunities, API access, or technical support:</p>
+            <ul>
+                <li><strong>Email:</strong> contact@safedrive-ai.com</li>
+                <li><strong>Technical Support:</strong> support@safedrive-ai.com</li>
+                <li><strong>Phone:</strong> +1 (555) 123-4567</li>
+                <li><strong>Hugging Face Space:</strong> <a href="https://huggingface.co/spaces/yeager07/distracted-driving-detection" target="_blank" style="color: #34d399;">yeager07/distracted-driving-detection</a></li>
+            </ul>
+
+            <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: rgba(52, 211, 153, 0.1); border-radius: 15px; border: 2px solid rgba(52, 211, 153, 0.3);">
+                <h3 style="color: #34d399; margin-bottom: 1rem;">
+                    <i class="fas fa-heart"></i> Drive Safe, Save Lives
+                </h3>
+                <p>Together, we can make our roads safer for everyone.</p>
+                <p style="margin-top: 1rem; font-size: 0.9rem; opacity: 0.8;">
+                    Powered by YOLO ONNX • Local Inference • Built with ❤️ for Road Safety
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,153 @@
+/* ========================================
+   SAFEDRIVE AI - DETECTION PAGE STYLES
+   Image & Video Detection Components
+   ======================================== */
+
+/* ========================================
+   DETECTION GRID LAYOUT
+   ======================================== */
+.detection-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.upload-section, .result-section {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2rem;
+    min-height: 500px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.section-title {
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ========================================
+   UPLOAD AREA
+   ======================================== */
+.upload-area {
+    border: 3px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.upload-area:hover, .upload-area.dragover {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.1);
+}
+
+.upload-icon {
+    font-size: 5rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+#preview-image {
+    max-width: 100%;
+    max-height: 400px;
+    border-radius: 10px;
+    display: none;
+}
+
+/* ========================================
+   DETECT BUTTON
+   ======================================== */
+.btn-detect {
+    background: linear-gradient(45deg, #34d399, #10b981);
+    color: #fff;
+    width: 100%;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.btn-detect:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(52, 211, 153, 0.5);
+}
+
+.btn-detect:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   RESULT SECTION
+   ======================================== */
+.result-content {
+    display: none;
+}
+
+.result-image {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+video {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+
+.detections-table {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    padding: 1rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.detection-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.8rem;
+    margin-bottom: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    animation: slideIn 0.5s ease;
+}
+
+.detection-class {
+    font-weight: 600;
+}
+
+.detection-confidence {
+    color: #34d399;
+    font-weight: 700;
+}
+
+/* ========================================
+   RESPONSIVE - DETECTION PAGES
+   ======================================== */
+@media (max-width: 968px) {
+    .detection-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .upload-area {
+        padding: 2rem;
+        min-height: 300px;
+    }
+
+    .upload-icon {
+        font-size: 3rem;
+    }
+}

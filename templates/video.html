@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Detection - SafeDrive AI</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detection.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <i class="fas fa-car"></i>
+            SafeDrive AI
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/image">Image Detection</a></li>
+            <li><a href="/video">Video Detection</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1><i class="fas fa-video"></i> Video Detection</h1>
+        
+        <div class="detection-grid">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="section-title">
+                    <i class="fas fa-upload"></i>
+                    Upload Video File
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drag & Drop Video Here</h3>
+                    <p>or click to browse</p>
+                    <p style="opacity: 0.6; margin-top: 1rem;">Supported: MP4, AVI, MOV</p>
+                    <input type="file" id="videoInput" accept="video/*" style="display: none;">
+                    <video id="preview-video" controls style="display: none; max-width: 100%; max-height: 400px; border-radius: 10px;"></video>
+                </div>
+                <button class="btn btn-detect" id="detectBtn" disabled>
+                    <i class="fas fa-magic"></i>
+                    Process Video
+                </button>
+                <div class="loader" id="loader"></div>
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Detection Results
+                </div>
+                <div class="placeholder" id="placeholder">
+                    <i class="fas fa-robot" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                    <p>Upload a video to see detection results</p>
+                </div>
+                <div class="result-content" id="resultContent">
+                    <video id="resultVideo" class="result-image" controls style="display: none;"></video>
+                    <a href="#" id="downloadBtn" class="btn btn-primary" style="margin-bottom: 1rem; display: none;">
+                        <i class="fas fa-download"></i>
+                        Download Processed Video
+                    </a>
+                    
+                    <!-- Summary Statistics -->
+                    <div id="summaryStats" style="display: none; margin-bottom: 1rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div class="stat-card">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #34d399; margin-bottom: 0.5rem;"></i>
+                                <h3 id="totalBehaviors">0</h3>
+                                <p>Behaviors Detected</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-film" style="font-size: 2rem; color: #34d399; margin-bottom: 0.5rem;"></i>
+                                <h3 id="totalDetections">0</h3>
+                                <p>Total Detections</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Detection Summary -->
+                    <div class="detections-table" id="detectionsTable"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const videoInput = document.getElementById('videoInput');
+        const previewVideo = document.getElementById('preview-video');
+        const detectBtn = document.getElementById('detectBtn');
+        const loader = document.getElementById('loader');
+        const errorMessage = document.getElementById('errorMessage');
+        const placeholder = document.getElementById('placeholder');
+        const resultContent = document.getElementById('resultContent');
+        const resultVideo = document.getElementById('resultVideo');
+        const detectionsTable = document.getElementById('detectionsTable');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const summaryStats = document.getElementById('summaryStats');
+
+        let selectedFile = null;
+        let currentVideoId = null;
+
+        // Icon mapping for 12 behavior classes
+        const behaviorIcons = {
+            'c0 - Safe Driving': 'fa-check-circle',
+            'c1 - Texting': 'fa-mobile-alt',
+            'c2 - Talking on the phone': 'fa-phone',
+            'c3 - Operating the Radio': 'fa-broadcast-tower',
+            'c4 - Drinking': 'fa-glass-water',
+            'c5 - Reaching Behind': 'fa-hand-pointer',
+            'c6 - Hair and Makeup': 'fa-wand-magic-sparkles',
+            'c7 - Talking to Passenger': 'fa-users',
+            'd0 - Eyes Closed': 'fa-eye-slash',
+            'd1 - Yawning': 'fa-face-tired',
+            'd2 - Nodding Off': 'fa-bed',
+            'd3 - Eyes Open': 'fa-eye'
+        };
+
+        // Get icon for behavior class
+        function getIconForBehavior(behavior) {
+            return behaviorIcons[behavior] || 'fa-exclamation-triangle';
+        }
+
+        // File upload handlers
+        uploadArea.addEventListener('click', () => videoInput.click());
+
+        videoInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('video/')) {
+                showError('Please select a valid video file');
+                return;
+            }
+
+            selectedFile = file;
+            const url = URL.createObjectURL(file);
+            previewVideo.src = url;
+            previewVideo.style.display = 'block';
+            uploadArea.querySelector('.upload-icon').style.display = 'none';
+            uploadArea.querySelector('h3').style.display = 'none';
+            uploadArea.querySelectorAll('p').forEach(p => p.style.display = 'none');
+
+            detectBtn.disabled = false;
+            hideError();
+            hideResults();
+        }
+
+        // Detect button click for uploaded videos
+        detectBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            detectBtn.disabled = true;
+            loader.style.display = 'block';
+            hideError();
+            hideResults();
+
+            const formData = new FormData();
+            formData.append('video', selectedFile);
+
+            try {
+                const response = await fetch('/api/detect-video', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentVideoId = data.video_id;
+                    displayVideoResults(data);
+                } else {
+                    showError(data.error || 'Detection failed');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                loader.style.display = 'none';
+                detectBtn.disabled = false;
+            }
+        });
+
+        function displayVideoResults(data) {
+            // Show result video
+            if (currentVideoId) {
+                resultVideo.src = `/api/download-video/${currentVideoId}`;
+                resultVideo.style.display = 'block';
+                downloadBtn.href = `/api/download-video/${currentVideoId}`;
+                downloadBtn.style.display = 'inline-flex';
+            }
+
+            // Calculate summary statistics
+            const totalBehaviors = data.summary.length;
+            const totalDetections = data.summary.reduce((sum, item) => sum + parseInt(item.total_detections || 0), 0);
+            
+            document.getElementById('totalBehaviors').textContent = totalBehaviors;
+            document.getElementById('totalDetections').textContent = totalDetections;
+
+            // Display summary
+            if (data.summary && data.summary.length > 0) {
+                summaryStats.style.display = 'block';
+                
+                detectionsTable.innerHTML = `
+                    <h4 style="margin-bottom: 1rem;">
+                        <i class="fas fa-chart-line"></i> Video Detection Summary
+                    </h4>
+                    <div id="summaryCardsContainer"></div>
+                `;
+                
+                const container = document.getElementById('summaryCardsContainer');
+                
+                data.summary.forEach((item, idx) => {
+                    const icon = getIconForBehavior(item.behavior);
+                    
+                    const card = document.createElement('div');
+                    card.className = 'summary-card';
+                    card.style.animationDelay = `${idx * 0.1}s`;
+                    
+                    card.innerHTML = `
+                        <div class="summary-card-header">
+                            <div class="summary-card-title">
+                                <i class="fas ${icon}"></i>
+                                ${item.behavior}
+                            </div>
+                            <div class="summary-card-badge">
+                                ${item.total_detections} detections
+                            </div>
+                        </div>
+                        <div class="summary-card-details">
+                            <div class="summary-card-detail">
+                                <span class="summary-card-detail-label">Avg Confidence</span>
+                                <span class="summary-card-detail-value">${item.avg_confidence}</span>
+                            </div>
+                            <div class="summary-card-detail">
+                                <span class="summary-card-detail-label">Frame Range</span>
+                                <span class="summary-card-detail-value">${item.frame_range}</span>
+                            </div>
+                            <div class="summary-card-detail">
+                                <span class="summary-card-detail-label">Duration</span>
+                                <span class="summary-card-detail-value">${item.duration}</span>
+                            </div>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } else {
+                summaryStats.style.display = 'none';
+                detectionsTable.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: #34d399; margin-bottom: 1rem;"></i>
+                        <h3>No Distractions Detected</h3>
+                        <p style="opacity: 0.7;">Driver appears to be driving safely throughout the video</p>
+                    </div>
+                `;
+            }
+
+            placeholder.style.display = 'none';
+            resultContent.style.display = 'block';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function hideResults() {
+            placeholder.style.display = 'block';
+            resultContent.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            summaryStats.style.display = 'none';
+            resultVideo.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

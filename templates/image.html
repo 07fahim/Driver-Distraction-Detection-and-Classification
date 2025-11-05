@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Detection - SafeDrive AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/detection.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="logo">
+            <i class="fas fa-car"></i>
+            SafeDrive AI
+        </div>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/image">Image Detection</a></li>
+            <li><a href="/video">Video Detection</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h1><i class="fas fa-image"></i> Image Detection</h1>
+        
+        <div class="detection-grid">
+            <!-- Upload Section -->
+            <div class="upload-section">
+                <div class="section-title">
+                    <i class="fas fa-upload"></i>
+                    Upload Image
+                </div>
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drag & Drop Image Here</h3>
+                    <p>or click to browse</p>
+                    <p style="opacity: 0.6; margin-top: 1rem;">Supported: JPG, PNG, JPEG</p>
+                    <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    <img id="preview-image" alt="Preview">
+                </div>
+                <button class="btn btn-detect" id="detectBtn" disabled>
+                    <i class="fas fa-magic"></i>
+                    Detect Distractions
+                </button>
+                <div class="loader" id="loader"></div>
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+
+            <!-- Result Section -->
+            <div class="result-section">
+                <div class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Detection Results
+                </div>
+                <div class="placeholder" id="placeholder">
+                    <i class="fas fa-robot" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
+                    <p>Upload an image and click detect to see results</p>
+                </div>
+                <div class="result-content" id="resultContent">
+                    <img id="resultImage" class="result-image" alt="Result">
+                    
+                    <!-- Detection Summary Stats -->
+                    <div id="summaryStats" style="display: none; margin-bottom: 1rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+                            <div class="stat-card">
+                                <i class="fas fa-exclamation-triangle" style="font-size: 2rem; color: #34d399; margin-bottom: 0.5rem;"></i>
+                                <h3 id="totalDetections">0</h3>
+                                <p>Total Detections</p>
+                            </div>
+                            <div class="stat-card">
+                                <i class="fas fa-list" style="font-size: 2rem; color: #34d399; margin-bottom: 0.5rem;"></i>
+                                <h3 id="uniqueBehaviors">0</h3>
+                                <p>Unique Behaviors</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Detection Details Table -->
+                    <div class="detections-table" id="detectionsTable"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const imageInput = document.getElementById('imageInput');
+        const previewImage = document.getElementById('preview-image');
+        const detectBtn = document.getElementById('detectBtn');
+        const loader = document.getElementById('loader');
+        const errorMessage = document.getElementById('errorMessage');
+        const placeholder = document.getElementById('placeholder');
+        const resultContent = document.getElementById('resultContent');
+        const resultImage = document.getElementById('resultImage');
+        const detectionsTable = document.getElementById('detectionsTable');
+        const summaryStats = document.getElementById('summaryStats');
+
+        let selectedFile = null;
+
+        // Icon mapping for 12 behavior classes
+        const behaviorIcons = {
+            'c0 - Safe Driving': 'fa-check-circle',
+            'c1 - Texting': 'fa-mobile-alt',
+            'c2 - Talking on the phone': 'fa-phone',
+            'c3 - Operating the Radio': 'fa-broadcast-tower',
+            'c4 - Drinking': 'fa-glass-water',
+            'c5 - Reaching Behind': 'fa-hand-pointer',
+            'c6 - Hair and Makeup': 'fa-wand-magic-sparkles',
+            'c7 - Talking to Passenger': 'fa-users',
+            'd0 - Eyes Closed': 'fa-eye-slash',
+            'd1 - Yawning': 'fa-face-tired',
+            'd2 - Nodding Off': 'fa-bed',
+            'd3 - Eyes Open': 'fa-eye'
+        };
+
+        // Get icon for behavior class
+        function getIconForBehavior(behavior) {
+            return behaviorIcons[behavior] || 'fa-exclamation-triangle';
+        }
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => imageInput.click());
+
+        // File input change
+        imageInput.addEventListener('change', (e) => {
+            handleFile(e.target.files[0]);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) {
+                showError('Please select a valid image file');
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                uploadArea.querySelector('.upload-icon').style.display = 'none';
+                uploadArea.querySelector('h3').style.display = 'none';
+                uploadArea.querySelectorAll('p').forEach(p => p.style.display = 'none');
+            };
+            reader.readAsDataURL(file);
+
+            detectBtn.disabled = false;
+            hideError();
+            hideResults();
+        }
+
+        // Detect button click
+        detectBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            detectBtn.disabled = true;
+            loader.style.display = 'block';
+            hideError();
+            hideResults();
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+
+            try {
+                const response = await fetch('/api/detect-image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    showError(data.error || 'Detection failed');
+                }
+            } catch (error) {
+                showError('Network error: ' + error.message);
+            } finally {
+                loader.style.display = 'none';
+                detectBtn.disabled = false;
+            }
+        });
+
+        function displayResults(data) {
+            // Show result image
+            resultImage.src = data.image;
+
+            // Calculate summary statistics
+            const uniqueBehaviors = new Set(data.detections.map(d => d.class)).size;
+            document.getElementById('totalDetections').textContent = data.detections.length;
+            document.getElementById('uniqueBehaviors').textContent = uniqueBehaviors;
+
+            // Display detections
+            if (data.detections && data.detections.length > 0) {
+                summaryStats.style.display = 'block';
+                
+                detectionsTable.innerHTML = `
+                    <h4 style="margin-bottom: 1rem;">
+                        <i class="fas fa-table"></i> Detection Details
+                    </h4>
+                    <div class="table-container">
+                        <table class="detection-details-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Behavior Class</th>
+                                    <th>Confidence</th>
+                                    <th>Bounding Box</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detectionTableBody"></tbody>
+                        </table>
+                    </div>
+                `;
+                
+                const tbody = document.getElementById('detectionTableBody');
+                data.detections.forEach((det, idx) => {
+                    const icon = getIconForBehavior(det.class);
+                    const row = document.createElement('tr');
+                    row.style.animationDelay = `${idx * 0.05}s`;
+                    row.innerHTML = `
+                        <td>${idx + 1}</td>
+                        <td>
+                            <span class="behavior-badge">
+                                <i class="fas ${icon}"></i>
+                                ${det.class}
+                            </span>
+                        </td>
+                        <td><span class="confidence-badge">${det.confidence}</span></td>
+                        <td><code class="bbox-code">${det.bbox}</code></td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } else {
+                summaryStats.style.display = 'none';
+                detectionsTable.innerHTML = `
+                    <div style="text-align: center; padding: 2rem;">
+                        <i class="fas fa-check-circle" style="font-size: 3rem; color: #34d399; margin-bottom: 1rem;"></i>
+                        <h3>No Distractions Detected</h3>
+                        <p style="opacity: 0.7;">Driver appears to be driving safely</p>
+                    </div>
+                `;
+            }
+
+            placeholder.style.display = 'none';
+            resultContent.style.display = 'block';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        function hideResults() {
+            placeholder.style.display = 'block';
+            resultContent.style.display = 'none';
+            summaryStats.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
