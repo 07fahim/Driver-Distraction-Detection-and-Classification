@@ -80,6 +80,7 @@ processed_videos/
 .env.*
 .env.local
 .env.production
+
 config.json
 secrets.json
 
