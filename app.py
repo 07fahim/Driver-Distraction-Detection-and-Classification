@@ -283,9 +283,38 @@ def process_video(input_path, output_path):
     h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
     
-    # Setup video writer
-    fourcc = cv2.VideoWriter_fourcc(*"avc1")  # H.264 codec
-    out = cv2.VideoWriter(output_path, fourcc, fps, (w, h))
+    # Setup video writer with codec fallback
+    fourcc = None
+    out = None
+    codecs_to_try = [
+        ('avc1', 'H.264'),      # Preferred
+        ('mp4v', 'MPEG-4'),     # Fallback 1
+        ('XVID', 'Xvid'),       # Fallback 2
+        ('MJPG', 'Motion JPEG') # Fallback 3
+    ]
+    
+    for codec_name, codec_desc in codecs_to_try:
+        try:
+            print(f"Trying codec: {codec_desc} ({codec_name})")
+            fourcc = cv2.VideoWriter_fourcc(*codec_name)
+            out = cv2.VideoWriter(output_path, fourcc, fps, (w, h))
+            
+            if out.isOpened():
+                print(f"✅ Successfully initialized with {codec_desc}")
+                break
+            else:
+                print(f"❌ {codec_desc} failed to initialize")
+                out.release()
+                out = None
+        except Exception as e:
+            print(f"❌ {codec_desc} error: {e}")
+            if out:
+                out.release()
+            out = None
+    
+    if out is None or not out.isOpened():
+        cap.release()
+        raise Exception("Could not initialize video writer with any codec")
     
     # Track detections
     detection_summary = {}
@@ -293,41 +322,54 @@ def process_video(input_path, output_path):
     
     print(f"Processing video: {total_frames} frames at {fps} FPS")
     
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret:
-            break
-        
-        # Run inference
-        boxes = run_inference(frame)
-        
-        # Draw TEXT OVERLAY (with frame counter)
-        annotated, _ = draw_boxes_text_overlay(frame, boxes, frame_count, fps)
-        out.write(annotated)
-        
-        # Collect statistics
-        for box in boxes:
-            class_name = box['class_name']
-            confidence = box['confidence']
+    try:
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
             
-            if class_name not in detection_summary:
-                detection_summary[class_name] = {
-                    'count': 0,
-                    'confidences': [],
-                    'frames': []
-                }
+            # Run inference
+            boxes = run_inference(frame)
             
-            detection_summary[class_name]['count'] += 1
-            detection_summary[class_name]['confidences'].append(confidence)
-            detection_summary[class_name]['frames'].append(frame_count)
-        
-        frame_count += 1
-        
-        if frame_count % 30 == 0:
-            print(f"Processed {frame_count}/{total_frames} frames")
+            # Draw TEXT OVERLAY (with frame counter)
+            annotated, _ = draw_boxes_text_overlay(frame, boxes, frame_count, fps)
+            
+            # Write frame
+            success = out.write(annotated)
+            if not success:
+                print(f"Warning: Failed to write frame {frame_count}")
+            
+            # Collect statistics
+            for box in boxes:
+                class_name = box['class_name']
+                confidence = box['confidence']
+                
+                if class_name not in detection_summary:
+                    detection_summary[class_name] = {
+                        'count': 0,
+                        'confidences': [],
+                        'frames': []
+                    }
+                
+                detection_summary[class_name]['count'] += 1
+                detection_summary[class_name]['confidences'].append(confidence)
+                detection_summary[class_name]['frames'].append(frame_count)
+            
+            frame_count += 1
+            
+            if frame_count % 30 == 0:
+                print(f"Processed {frame_count}/{total_frames} frames")
     
-    cap.release()
-    out.release()
+    finally:
+        cap.release()
+        out.release()
+    
+    # Verify output file was created
+    if not os.path.exists(output_path):
+        raise Exception(f"Output video file was not created: {output_path}")
+    
+    if os.path.getsize(output_path) == 0:
+        raise Exception(f"Output video file is empty: {output_path}")
     
     # Create summary
     summary_data = []
@@ -348,6 +390,7 @@ def process_video(input_path, output_path):
     summary_data.sort(key=lambda x: x['total_detections'], reverse=True)
     
     print(f"Video processing complete: {len(summary_data)} behaviors detected")
+    print(f"Output file size: {os.path.getsize(output_path)} bytes")
     
     return summary_data
 
