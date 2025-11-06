@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
     git \
+    pkg-config \
     libglib2.0-0 \
     libgl1 \
     libsm6 \
@@ -18,33 +19,34 @@ RUN apt-get update && apt-get install -y \
     libavformat-dev \
     libswscale-dev \
     libavutil-dev \
-    pkg-config \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Clone and build OpenCV with FFmpeg
-RUN git clone --depth 1 --branch 4.10.0 https://github.com/opencv/opencv-python.git && \
-    cd opencv-python && \
-    mkdir build && cd build && \
+# Build OpenCV 4.10.0 from source with FFmpeg
+RUN git clone --depth 1 --branch 4.10.0 https://github.com/opencv/opencv.git && \
+    mkdir -p opencv/build && cd opencv/build && \
     cmake -D CMAKE_BUILD_TYPE=RELEASE \
           -D CMAKE_INSTALL_PREFIX=/usr/local \
+          -D BUILD_EXAMPLES=OFF \
+          -D BUILD_TESTS=OFF \
+          -D BUILD_PERF_TESTS=OFF \
+          -D BUILD_opencv_apps=OFF \
           -D BUILD_opencv_python3=ON \
           -D BUILD_opencv_python2=OFF \
-          -D BUILD_EXAMPLES=OFF \
-          -D BUILD_opencv_apps=OFF \
+          -D PYTHON3_EXECUTABLE=$(which python) \
           -D WITH_FFMPEG=ON \
           -D WITH_GSTREAMER=OFF \
           -D WITH_V4L=OFF \
           .. && \
     make -j$(nproc) && \
     make install && \
-    cd ../../ && rm -rf opencv-python
+    ldconfig && \
+    cd ../../ && rm -rf opencv
 
-# Install Python packages
+# Install Python packages (NO opencv-python)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app
 COPY . .
 
 EXPOSE 5000
