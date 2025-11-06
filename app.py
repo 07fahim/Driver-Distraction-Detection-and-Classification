@@ -4,7 +4,6 @@ import base64
 from werkzeug.utils import secure_filename
 import tempfile
 import uuid
-import shutil
 import cv2
 import numpy as np
 import onnxruntime as ort
@@ -12,6 +11,14 @@ import onnxruntime as ort
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max file size
 app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
+
+# =========================
+# DEBUG: Check OpenCV FFmpeg support
+# =========================
+print("OpenCV version:", cv2.__version__)
+build_info = cv2.getBuildInformation()
+ffmpeg_enabled = "FFMPEG: YES" in build_info
+print(f"OpenCV FFmpeg support: {'YES' if ffmpeg_enabled else 'NO'}")
 
 # =========================
 # ONNX MODEL SETUP
@@ -146,23 +153,23 @@ def draw_boxes_text_overlay(image, boxes, frame_number=None, fps=None):
     return annotated, detection_data
 
 # =========================
-# MAX QUALITY H.264 (avc1) + .mp4
+# MAX QUALITY H.264 (avc1) + .mp4 WITH ROBUST FALLBACK
 # =========================
 def create_writer(path, fps, w, h):
+    # Try H.264 (avc1) first
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
     out = cv2.VideoWriter(path, fourcc, float(fps), (w, h))
     
     if out.isOpened():
-        out.set(cv2.VIDEOWRITER_PROP_QUALITY, 100)  # MAX QUALITY
-        print("Video writer: avc1 + .mp4 + QUALITY=100")
+        print("Video writer: avc1 (H.264) + .mp4 + QUALITY=100")
         return out
-    
-    # Fallback
-    print("avc1 failed (DLL missing), using mp4v")
+
+    # Fallback to mp4v if avc1 not available
+    print("avc1 not supported, falling back to mp4v")
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(path, fourcc, float(fps), (w, h))
     if not out.isOpened():
-        raise Exception("VideoWriter failed")
+        raise Exception("VideoWriter failed: both avc1 and mp4v unsupported")
     return out
 
 # =========================
@@ -279,10 +286,15 @@ def download_video(video_id):
 
 @app.route('/health')
 def health():
-    return jsonify({'status': 'ok', 'codec': 'avc1', 'container': '.mp4', 'quality': 'MAX'})
+    return jsonify({
+        'status': 'ok',
+        'codec': 'avc1',
+        'container': '.mp4',
+        'quality': 'MAX',
+        'opencv_ffmpeg': 'YES' if ffmpeg_enabled else 'NO'
+    })
 
 if __name__ == '__main__':
     print("SafeDrive AI - MAX QUALITY .mp4 OUTPUT")
     print("Codec: avc1 (H.264) | Container: .mp4 | Quality: 100")
-    print("Requires: openh264-1.8.0-win64.dll in project folder")
     app.run(debug=True, host='0.0.0.0', port=5000)
