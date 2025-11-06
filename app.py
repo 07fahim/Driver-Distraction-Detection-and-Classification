@@ -156,22 +156,18 @@ def draw_boxes_text_overlay(image, boxes, frame_number=None, fps=None):
 # MAX QUALITY H.264 (avc1) + .mp4 WITH ROBUST FALLBACK
 # =========================
 def create_writer(path, fps, w, h):
-    print(f"Creating writer: {path}, fps={fps}, size={w}x{h}")
-    
-    # Try avc1 (H.264)
+    print(f"Attempting VideoWriter: {path}, FPS: {fps}, Size: {w}x{h}")
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
     out = cv2.VideoWriter(path, fourcc, float(fps), (w, h))
-    
     if out.isOpened():
-        print("Video writer: avc1 (H.264) + .mp4 + QUALITY=100")
+        print("SUCCESS: avc1 (H.264) writer initialized")
         return out
-
-    print("avc1 failed — trying mp4v fallback")
+    print("avc1 failed. Trying mp4v fallback...")
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(path, fourcc, float(fps), (w, h))
     if not out.isOpened():
-        raise Exception("VideoWriter failed: both avc1 and mp4v not supported")
-    print("Fallback: using mp4v")
+        raise Exception("VideoWriter failed: no codec available")
+    print("FALLBACK: mp4v used")
     return out
 
 # =========================
