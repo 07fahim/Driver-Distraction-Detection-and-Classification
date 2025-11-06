@@ -1,9 +1,18 @@
 FROM python:3.11-slim
 
+# Enable manylinux compatibility
+ENV _PYTHON_HOST_PLATFORM=linux_x86_64
+ENV PIP_NO_CACHE_DIR=1
+
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
-    libglib2.0-0 libgl1 libsm6 libxext6 libxrender1 libgomp1 \
+    libglib2.0-0 \
+    libgl1 \
+    libsm6 \
+    libxext6 \
+    libxrender1 \
+    libgomp1 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
