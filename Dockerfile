@@ -2,7 +2,7 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install FFmpeg + OpenCV system dependencies
+# Install ONLY ffmpeg + required OpenCV deps
 RUN apt-get update && apt-get install -y \
     libglib2.0-0 \
     libgl1 \
@@ -11,9 +11,6 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libgomp1 \
     ffmpeg \
-    libavcodec58 \
-    libavformat58 \
-    libswscale5 \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Python packages
