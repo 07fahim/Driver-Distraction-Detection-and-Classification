@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Detection - SafeDrive AI</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>Car</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -61,9 +61,23 @@
                     <i class="fas fa-robot" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
                     <p>Upload a video to see detection results</p>
                 </div>
-                <div class="result-content" id="resultContent">
-                    <video id="resultVideo" class="result-image" controls style="display: none;"></video>
-                    <a href="#" id="downloadBtn" class="btn btn-primary" style="margin-bottom: 1rem; display: none;">
+                <div class="result-content" id="resultContent" style="display: none;">
+                    <!-- Video Player -->
+                    <video id="resultVideo" class="result-image" controls>
+                        <source id="videoSource" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    
+                    <!-- Fallback Warning (for non-browser-compatible videos) -->
+                    <div id="videoFallback" style="display: none; text-align: center; padding: 2rem; background: rgba(255, 165, 0, 0.15); border-radius: 10px; margin-bottom: 1rem; border: 1px solid rgba(255, 165, 0, 0.3);">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
+                        <h4 style="margin: 0.5rem 0; color: #f59e0b;">Browser Playback Not Available</h4>
+                        <p style="opacity: 0.8; margin: 0.5rem 0;">The processed video uses a format that may not play directly in your browser.</p>
+                        <p style="font-weight: 600; margin: 0.5rem 0;">Please use the <strong>Download</strong> button below to view the full result.</p>
+                    </div>
+                    
+                    <!-- Download Button -->
+                    <a href="#" id="downloadBtn" class="btn btn-primary" style="display: none; margin-bottom: 1rem;">
                         <i class="fas fa-download"></i>
                         Download Processed Video
                     </a>
@@ -84,7 +98,7 @@
                         </div>
                     </div>
                     
-                    <!-- Detection Summary -->
+                    <!-- Detection Summary Cards -->
                     <div class="detections-table" id="detectionsTable"></div>
                 </div>
             </div>
@@ -92,6 +106,7 @@
     </div>
 
     <script>
+        // DOM Elements
         const uploadArea = document.getElementById('uploadArea');
         const videoInput = document.getElementById('videoInput');
         const previewVideo = document.getElementById('preview-video');
@@ -101,6 +116,8 @@
         const placeholder = document.getElementById('placeholder');
         const resultContent = document.getElementById('resultContent');
         const resultVideo = document.getElementById('resultVideo');
+        const videoSource = document.getElementById('videoSource');
+        const videoFallback = document.getElementById('videoFallback');
         const detectionsTable = document.getElementById('detectionsTable');
         const downloadBtn = document.getElementById('downloadBtn');
         const summaryStats = document.getElementById('summaryStats');
@@ -108,7 +125,7 @@
         let selectedFile = null;
         let currentVideoId = null;
 
-        // Icon mapping for 12 behavior classes
+        // Behavior → Icon Mapping
         const behaviorIcons = {
             'c0 - Safe Driving': 'fa-check-circle',
             'c1 - Texting': 'fa-mobile-alt',
@@ -124,12 +141,11 @@
             'd3 - Eyes Open': 'fa-eye'
         };
 
-        // Get icon for behavior class
         function getIconForBehavior(behavior) {
             return behaviorIcons[behavior] || 'fa-exclamation-triangle';
         }
 
-        // File upload handlers
+        // === File Upload Handlers ===
         uploadArea.addEventListener('click', () => videoInput.click());
 
         videoInput.addEventListener('change', (e) => {
@@ -170,7 +186,7 @@
             hideResults();
         }
 
-        // Detect button click for uploaded videos
+        // === Process Video ===
         detectBtn.addEventListener('click', async () => {
             if (!selectedFile) return;
 
@@ -204,42 +220,52 @@
             }
         });
 
+        // === Display Results ===
         function displayVideoResults(data) {
-            // Show result video
-            if (currentVideoId) {
-                resultVideo.src = `/api/download-video/${currentVideoId}`;
+            // Cache-busted video URL
+            const videoUrl = `/api/download-video/${currentVideoId}?t=${Date.now()}`;
+            videoSource.src = videoUrl;
+            resultVideo.load();
+
+            // Handle browser playback compatibility
+            if (data.browser_playback === 'download') {
+                resultVideo.style.display = 'none';
+                videoFallback.style.display = 'block';
+            } else {
                 resultVideo.style.display = 'block';
-                downloadBtn.href = `/api/download-video/${currentVideoId}`;
-                downloadBtn.style.display = 'inline-flex';
+                videoFallback.style.display = 'none';
             }
 
-            // Calculate summary statistics
+            // Download button
+            downloadBtn.href = videoUrl;
+            downloadBtn.download = 'detected_video.mp4';
+            downloadBtn.style.display = 'inline-flex';
+
+            // Summary stats
             const totalBehaviors = data.summary.length;
             const totalDetections = data.summary.reduce((sum, item) => sum + parseInt(item.total_detections || 0), 0);
-            
             document.getElementById('totalBehaviors').textContent = totalBehaviors;
             document.getElementById('totalDetections').textContent = totalDetections;
 
-            // Display summary
+            // Show stats
+            summaryStats.style.display = totalBehaviors > 0 ? 'block' : 'none';
+
+            // Detection Summary Cards
             if (data.summary && data.summary.length > 0) {
-                summaryStats.style.display = 'block';
-                
                 detectionsTable.innerHTML = `
                     <h4 style="margin-bottom: 1rem;">
                         <i class="fas fa-chart-line"></i> Video Detection Summary
                     </h4>
-                    <div id="summaryCardsContainer"></div>
+                    <div id="summaryCardsContainer" style="display: grid; gap: 1rem;"></div>
                 `;
-                
+
                 const container = document.getElementById('summaryCardsContainer');
-                
                 data.summary.forEach((item, idx) => {
                     const icon = getIconForBehavior(item.behavior);
-                    
                     const card = document.createElement('div');
                     card.className = 'summary-card';
                     card.style.animationDelay = `${idx * 0.1}s`;
-                    
+
                     card.innerHTML = `
                         <div class="summary-card-header">
                             <div class="summary-card-title">
@@ -265,11 +291,9 @@
                             </div>
                         </div>
                     `;
-                    
                     container.appendChild(card);
                 });
             } else {
-                summaryStats.style.display = 'none';
                 detectionsTable.innerHTML = `
                     <div style="text-align: center; padding: 2rem;">
                         <i class="fas fa-check-circle" style="font-size: 3rem; color: #34d399; margin-bottom: 1rem;"></i>
@@ -279,10 +303,12 @@
                 `;
             }
 
+            // Show results
             placeholder.style.display = 'none';
             resultContent.style.display = 'block';
         }
 
+        // === Utility Functions ===
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.style.display = 'block';
@@ -298,7 +324,14 @@
             downloadBtn.style.display = 'none';
             summaryStats.style.display = 'none';
             resultVideo.style.display = 'none';
+            videoFallback.style.display = 'none';
         }
+
+        // === Video Error Handling ===
+        resultVideo.addEventListener('error', () => {
+            resultVideo.style.display = 'none';
+            videoFallback.style.display = 'block';
+        });
     </script>
 </body>
 </html>
