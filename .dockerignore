@@ -1,0 +1,69 @@
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.pyproj
+*.egg-info
+dist
+build
+*.egg
+*.log
+.env
+.env.local
+*.env
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Git
+.git
+.gitignore
+
+# OS / Temp files
+.DS_Store
+Thumbs.db
+*.tmp
+*.bak
+*.swp
+
+# Node / Frontend (if any)
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Local testing
+test/
+tests/
+*.test.py
+
+# Uploads / Temp files from your app
+temp_uploads/
+temp_results/
+*.mp4
+*.jpg
+*.jpeg
+*.png
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+
+# Render / CI
+render.yaml
+*.log
+
+# Cache
+.pytest_cache/
+.coverage
+htmlcov/
