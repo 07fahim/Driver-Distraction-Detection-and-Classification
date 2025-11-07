@@ -11,17 +11,6 @@ app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max
 app.config['UPLOAD_FOLDER'] = 'temp_uploads'
 app.config['RESULTS_FOLDER'] = 'temp_results'
 
-# =========================
-# FOLDER SETUP (FIXED FOR DOCKER)
-# =========================
-def ensure_dirs():
-    """Create folders at runtime (safe for non-root user)"""
-    os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-    os.makedirs(app.config['RESULTS_FOLDER'], exist_ok=True)
-
-@app.before_first_request
-def setup():
-    ensure_dirs()
 
 # Initialize Gradio Client
 HF_SPACE = "yeager07/distracted-driving-detection"
