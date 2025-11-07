@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from gradio_client import Client, handle_file
-import os
+from pathlib import Path  # ← CROSS-PLATFORM PATHS
 import base64
 import shutil
 from werkzeug.utils import secure_filename
@@ -8,9 +8,16 @@ import uuid
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max
-app.config['UPLOAD_FOLDER'] = 'temp_uploads'
-app.config['RESULTS_FOLDER'] = 'temp_results'
+app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
+app.config['RESULTS_FOLDER'] = '/tmp/results'
 
+# USE PATHLIB — WORKS ON WINDOWS + LINUX + DOCKER
+upload_dir = Path(app.config['UPLOAD_FOLDER'])
+result_dir = Path(app.config['RESULTS_FOLDER'])
+
+# Create directories (safe on all systems)
+upload_dir.mkdir(parents=True, exist_ok=True)
+result_dir.mkdir(parents=True, exist_ok=True)
 
 # Initialize Gradio Client
 HF_SPACE = "yeager07/distracted-driving-detection"
@@ -48,33 +55,32 @@ def detect_image():
         if file.filename == '':
             return jsonify({'success': False, 'error': 'Empty filename'}), 400
         
-        # Save uploaded file temporarily
+        # Save uploaded file to /tmp/uploads
         filename = secure_filename(file.filename)
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4()}_{filename}")
-        file.save(temp_path)
+        temp_path = upload_dir / f"{uuid.uuid4()}_{filename}"
+        file.save(str(temp_path))  # ← str() for Windows
         
         try:
             # Call Hugging Face API
             result = client.predict(
-                image=handle_file(temp_path),
+                image=handle_file(str(temp_path)),
                 api_name="/predict_image"
             )
             
-            # Parse result - result is a tuple: (image_path, dataframe_dict)
-            output_image_path = result[0]  # This is a string path
-            detection_table = result[1]  # This is a dict with 'headers' and 'data'
+            # Parse result
+            output_image_path = Path(result[0])  # ← Path object
+            detection_table = result[1]
             
-            # Convert output image to base64
+            # Read output image as base64
             with open(output_image_path, 'rb') as img_file:
                 img_data = base64.b64encode(img_file.read()).decode('utf-8')
             
-            # Parse detections from dataframe — NO BBOX, FIX FLOAT ERROR
+            # Parse detections
             detections = []
             if detection_table and isinstance(detection_table, dict) and 'data' in detection_table:
                 for row in detection_table['data']:
                     if len(row) >= 2:
                         try:
-                            # Remove % and convert to float
                             confidence_str = row[1].rstrip('%').strip()
                             confidence_val = float(confidence_str)
                             detections.append({
@@ -82,7 +88,6 @@ def detect_image():
                                 'confidence': f"{confidence_val:.1f}%"
                             })
                         except (ValueError, AttributeError):
-                            # Fallback if confidence is not a string/number
                             detections.append({
                                 'class': row[0],
                                 'confidence': 'N/A'
@@ -95,14 +100,10 @@ def detect_image():
             })
         
         finally:
-            # Cleanup temp files
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
-            if isinstance(result[0], str) and os.path.exists(result[0]):
-                try:
-                    os.remove(result[0])
-                except:
-                    pass
+            # Cleanup
+            temp_path.unlink(missing_ok=True)
+            if output_image_path.exists():
+                output_image_path.unlink(missing_ok=True)
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -120,34 +121,33 @@ def detect_video():
         if file.filename == '':
             return jsonify({'success': False, 'error': 'Empty filename'}), 400
         
-        # Save uploaded file
+        # Save video
         filename = secure_filename(file.filename)
         video_id = str(uuid.uuid4())
-        temp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{video_id}_{filename}")
-        file.save(temp_path)
+        temp_path = upload_dir / f"{video_id}_{filename}"
+        file.save(str(temp_path))
         
         try:
-            # Call Hugging Face API
+            # Call HF API
             result = client.predict(
-                video_path={"video": handle_file(temp_path)},
+                video_path={"video": handle_file(str(temp_path))},
                 api_name="/predict_video"
             )
             
-            # Parse result - result is a tuple: (video_dict, dataframe_dict)
-            output_video = result[0]  # This is a dict with 'video' key
-            summary_table = result[1]  # DataFrame dict with 'headers' and 'data'
+            output_video = result[0]
+            summary_table = result[1]
             
-            # Extract video path from dict
+            # Extract video path
             if isinstance(output_video, dict) and 'video' in output_video:
-                output_video_path = output_video['video']
+                output_video_path = Path(output_video['video'])
             else:
-                output_video_path = output_video  # Fallback if it's a string
+                output_video_path = Path(output_video)
             
-            # Save output video to results folder
-            result_path = os.path.join(app.config['RESULTS_FOLDER'], f"{video_id}_result.mp4")
-            shutil.copy(output_video_path, result_path)
+            # Save result
+            result_path = result_dir / f"{video_id}_result.mp4"
+            shutil.copy(str(output_video_path), str(result_path))
             
-            # Parse summary from dataframe
+            # Parse summary
             summary = []
             if summary_table and isinstance(summary_table, dict) and 'data' in summary_table:
                 for row in summary_table['data']:
@@ -168,9 +168,7 @@ def detect_video():
             })
         
         finally:
-            # Cleanup upload file
-            if os.path.exists(temp_path):
-                os.remove(temp_path)
+            temp_path.unlink(missing_ok=True)
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
@@ -181,33 +179,33 @@ def detect_video():
 @app.route('/api/download-video/<video_id>')
 def download_video(video_id):
     try:
-        # Find the result file
-        result_path = os.path.join(app.config['RESULTS_FOLDER'], f"{video_id}_result.mp4")
+        result_path = result_dir / f"{video_id}_result.mp4"
         
-        if not os.path.exists(result_path):
+        if not result_path.exists():
             return jsonify({'error': 'Video not found'}), 404
         
-        return send_file(result_path, mimetype='video/mp4', as_attachment=False)
+        return send_file(str(result_path), mimetype='video/mp4', as_attachment=False)
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 # =========================
-# CLEANUP TASK (Optional)
+# CLEANUP TASK
 # =========================
 def cleanup_old_files():
     """Remove files older than 1 hour"""
     import time
     current_time = time.time()
     
-    for folder in [app.config['UPLOAD_FOLDER'], app.config['RESULTS_FOLDER']]:
-        for filename in os.listdir(folder):
-            filepath = os.path.join(folder, filename)
-            if os.path.isfile(filepath):
-                file_age = current_time - os.path.getmtime(filepath)
-                if file_age > 3600:  # 1 hour
+    for folder in [upload_dir, result_dir]:
+        if not folder.exists():
+            continue
+        for filepath in folder.iterdir():
+            if filepath.is_file():
+                file_age = current_time - filepath.stat().st_mtime
+                if file_age > 3600:
                     try:
-                        os.remove(filepath)
+                        filepath.unlink()
                     except:
                         pass
 
@@ -226,8 +224,5 @@ def server_error(e):
 # RUN APP
 # =========================
 if __name__ == '__main__':
-    # Periodic cleanup (run in production with scheduler like APScheduler)
     cleanup_old_files()
-    
-    # Run Flask app
     app.run(debug=True, host='0.0.0.0', port=5000)
