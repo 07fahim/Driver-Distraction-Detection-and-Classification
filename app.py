@@ -11,11 +11,9 @@ app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max
 app.config['UPLOAD_FOLDER'] = '/tmp/uploads'
 app.config['RESULTS_FOLDER'] = '/tmp/results'
 
-# USE PATHLIB — WORKS ON WINDOWS + LINUX + DOCKER
 upload_dir = Path(app.config['UPLOAD_FOLDER'])
 result_dir = Path(app.config['RESULTS_FOLDER'])
 
-# Create directories (safe on all systems)
 upload_dir.mkdir(parents=True, exist_ok=True)
 result_dir.mkdir(parents=True, exist_ok=True)
 

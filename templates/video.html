@@ -10,84 +10,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/detection.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/analysis.css') }}">
-
-    <style>
-        /* ---------- HOVER CONTROLS (normal + fullscreen) ---------- */
-        .video-player-wrapper {
-            position: relative;
-            width: 100%;
-            border-radius: 10px;
-            overflow: hidden;
-            background: #000;
-            margin-bottom: 1.5rem;
-        }
-        .video-player-wrapper video {
-            width: 100% !important;
-            height: auto !important;
-            display: block;
-            border-radius: 10px;
-        }
-        /* Normal view – hide controls until hover */
-        .video-player-wrapper video::-webkit-media-controls-panel,
-        .video-player-wrapper video::-webkit-media-controls { opacity: 0; transition: opacity .3s; }
-        .video-player-wrapper:hover video::-webkit-media-controls-panel,
-        .video-player-wrapper:hover video::-webkit-media-controls { opacity: 1; }
-
-        /* Full-screen – always show controls */
-        .video-player-wrapper video:fullscreen::-webkit-media-controls-panel,
-        .video-player-wrapper video:fullscreen::-webkit-media-controls { opacity: 1 !important; }
-
-        /* ---------- DETECTION OVERLAY (normal) ---------- */
-        .detection-overlay {
-            position: absolute; bottom: 20px; left: 20px;
-            background: rgba(0,0,0,.75); backdrop-filter: blur(12px);
-            border: 1px solid rgba(52,211,153,.6); border-radius: 12px;
-            padding: .9rem 1.2rem; font-family:'Inter',sans-serif;
-            font-weight:600; color:#fff; display:flex; flex-direction:column; gap:.6rem;
-            min-width:220px; z-index:50; box-shadow:0 4px 20px rgba(0,0,0,.4);
-            animation:fadeInUp .4s ease;
-        }
-        .detection-item {display:flex; justify-content:space-between; align-items:center; font-size:1rem; line-height:1.4;}
-        .detection-item i {margin-right:8px; color:#34d399;}
-        .confidence-bar {height:6px; background:rgba(255,255,255,.2); border-radius:3px; overflow:hidden; margin-top:4px;}
-        .confidence-fill {height:100%; background:linear-gradient(90deg,#34d399,#10b981); border-radius:3px; transition:width .4s;}
-        @keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-        .detection-overlay:empty{display:none!important;}
-
-        /* ---------- FULL-SCREEN DETECTION OVERLAY (WebVTT) ---------- */
-        #resultVideo::cue(.detection-cue) {
-            background:rgba(0,0,0,.75)!important; backdrop-filter:blur(12px);
-            color:white!important; font-family:'Inter',sans-serif!important;
-            font-weight:600!important; font-size:1rem!important;
-            padding:.9rem 1.2rem!important; border-radius:12px!important;
-            border:1px solid rgba(52,211,153,.6)!important;
-            box-shadow:0 4px 20px rgba(0,0,0,.4);
-            bottom:20px!important; left:20px!important;
-            display:flex!important; flex-direction:column!important; gap:.6rem!important;
-            min-width:220px!important;
-        }
-        #resultVideo::cue(.detection-cue .item){display:flex!important;justify-content:space-between!important;align-items:center!important;}
-        #resultVideo::cue(.detection-cue .bar){height:6px!important;background:rgba(255,255,255,.2)!important;border-radius:3px!important;overflow:hidden!important;margin-top:4px!important;}
-        #resultVideo::cue(.detection-cue .fill){height:100%!important;background:linear-gradient(90deg,#34d399,#10b981)!important;border-radius:3px!important;}
-
-        /* ---------- FPS COUNTER (normal) ---------- */
-        #fpsCounter {
-            position:absolute; top:12px; right:12px;
-            background:rgba(0,0,0,.7); color:#fff; padding:6px 10px;
-            border-radius:8px; font-family:'Inter',sans-serif; font-size:0.9rem;
-            font-weight:600; z-index:999; backdrop-filter:blur(4px);
-            border:1px solid rgba(255,255,255,.1);
-        }
-
-        /* ---------- FPS COUNTER (full-screen) ---------- */
-        #resultVideo::cue(.fps-cue) {
-            background:rgba(0,0,0,.7)!important; color:white!important;
-            font-family:'Inter',sans-serif!important; font-weight:600!important;
-            font-size:1rem!important; padding:6px 10px!important;
-            border-radius:8px!important; top:20px!important; right:20px!important;
-            backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.1)!important;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/video.css') }}">
 </head>
 <body>
     <nav>
@@ -115,7 +38,7 @@
                     <input type="file" id="videoInput" accept="video/*" style="display:none;">
                     <video id="preview-video" controls style="display:none;max-width:100%;max-height:400px;border-radius:10px;"></video>
                 </div>
-                <button class="btn btn-detect" id="detectBtn" disabled><i class="fas fa-magic"></i> Process Video</button>
+                <button class="btn btn-detect" id="detectBtn" disabled><i class="fas fa-brain"></i> Detect Distractions</button>
                 <div class="loader" id="loader"></div>
                 <div class="error-message" id="errorMessage"></div>
             </div>
@@ -143,10 +66,10 @@
                     </div>
 
                     <!-- Fallback -->
-                    <div id="videoFallback" style="display:none;text-align:center;padding:2rem;background:rgba(255,165,0,0.15);border-radius:10px;margin-bottom:1rem;border:1px solid rgba(255,165,0,0.3);">
-                        <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#f59e0b;margin-bottom:1rem;"></i>
-                        <h4 style="margin:0.5rem 0;color:#f59e0b;">Browser Playback Not Available</h4>
-                        <p style="opacity:0.8;margin:0.5rem 0;">Use the Download button below.</p>
+                    <div id="videoFallback" style="display:none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <h4>Browser Playback Not Available</h4>
+                        <p>Use the Download button below.</p>
                     </div>
 
                     <!-- Download -->
@@ -275,19 +198,45 @@
             currentFrame = Math.min(Math.floor(resultVideo.currentTime * VIDEO_FPS), totalFrames - 1);
             frameValue.textContent = currentFrame;
 
+            // Create FPS track if not exists
             if (!fpsTrack) {
                 fpsTrack = resultVideo.addTextTrack('metadata', 'fps', 'en');
+                fpsTrack.mode = 'showing'; // CRITICAL: Enable the track
                 fpsCue = new VTTCue(0, 999999, '');
                 fpsCue.align = 'end';
                 fpsCue.line = 1;
                 fpsCue.position = 95;
                 fpsTrack.addCue(fpsCue);
-                fpsCue.className = 'fps-cue';
             }
-            fpsCue.text = `FPS: ${lastFps || '0'} | Frame: ${currentFrame}`;
+            
+            // Update cue text
+            if (fpsCue) {
+                fpsCue.text = `FPS: ${lastFps || '0'} | Frame: ${currentFrame}`;
+            }
 
             requestAnimationFrame(updateFPS);
         }
+        
+        // Fullscreen detection
+        function handleFullscreenChange() {
+            const isFullscreen = document.fullscreenElement === resultVideo || 
+                                document.webkitFullscreenElement === resultVideo ||
+                                document.mozFullScreenElement === resultVideo ||
+                                document.msFullscreenElement === resultVideo;
+            
+            if (isFullscreen) {
+                // Enable text tracks in fullscreen
+                Array.from(resultVideo.textTracks).forEach(track => {
+                    track.mode = 'showing';
+                });
+            }
+        }
+        
+        // Listen for fullscreen changes
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
         // Overlay (normal + fullscreen)
         function updateDetectionOverlay(detections) {
