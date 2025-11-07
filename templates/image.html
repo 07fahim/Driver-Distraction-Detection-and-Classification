@@ -25,13 +25,12 @@
     </nav>
 
     <div class="container">
-        <h1><i class="fas fa-image"></i> Image Detection</h1>
+        <h1>Image Detection</h1>
         
         <div class="detection-grid">
             <!-- Upload Section -->
             <div class="upload-section">
                 <div class="section-title">
-                    <i class="fas fa-upload"></i>
                     Upload Image
                 </div>
                 <div class="upload-area" id="uploadArea">
@@ -43,7 +42,6 @@
                     <img id="preview-image" alt="Preview">
                 </div>
                 <button class="btn btn-detect" id="detectBtn" disabled>
-                    <i class="fas fa-magic"></i>
                     Detect Distractions
                 </button>
                 <div class="loader" id="loader"></div>
@@ -53,14 +51,13 @@
             <!-- Result Section -->
             <div class="result-section">
                 <div class="section-title">
-                    <i class="fas fa-chart-bar"></i>
                     Detection Results
                 </div>
                 <div class="placeholder" id="placeholder">
                     <i class="fas fa-robot" style="font-size: 4rem; opacity: 0.3; margin-bottom: 1rem;"></i>
                     <p>Upload an image and click detect to see results</p>
                 </div>
-                <div class="result-content" id="resultContent">
+                <div class="result-content" id="resultContent" style="display: none;">
                     <img id="resultImage" class="result-image" alt="Result">
                     
                     <!-- Detection Summary Stats -->
@@ -87,6 +84,7 @@
     </div>
 
     <script>
+        // DOM Elements
         const uploadArea = document.getElementById('uploadArea');
         const imageInput = document.getElementById('imageInput');
         const previewImage = document.getElementById('preview-image');
@@ -101,7 +99,7 @@
 
         let selectedFile = null;
 
-        // Icon mapping for 12 behavior classes
+        // Icon mapping for behaviors
         const behaviorIcons = {
             'c0 - Safe Driving': 'fa-check-circle',
             'c1 - Texting': 'fa-mobile-alt',
@@ -117,41 +115,22 @@
             'd3 - Eyes Open': 'fa-eye'
         };
 
-        // Get icon for behavior class
         function getIconForBehavior(behavior) {
             return behaviorIcons[behavior] || 'fa-exclamation-triangle';
         }
 
-        // Click to upload
+        // Upload Handlers
         uploadArea.addEventListener('click', () => imageInput.click());
-
-        // File input change
-        imageInput.addEventListener('change', (e) => {
-            handleFile(e.target.files[0]);
-        });
-
-        // Drag and drop
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            handleFile(e.dataTransfer.files[0]);
-        });
+        imageInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+        uploadArea.addEventListener('dragover', (e) => { e.preventDefault(); uploadArea.classList.add('dragover'); });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
 
         function handleFile(file) {
             if (!file || !file.type.startsWith('image/')) {
                 showError('Please select a valid image file');
                 return;
             }
-
             selectedFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -162,16 +141,14 @@
                 uploadArea.querySelectorAll('p').forEach(p => p.style.display = 'none');
             };
             reader.readAsDataURL(file);
-
             detectBtn.disabled = false;
             hideError();
             hideResults();
         }
 
-        // Detect button click
+        // Detect Button
         detectBtn.addEventListener('click', async () => {
             if (!selectedFile) return;
-
             detectBtn.disabled = true;
             loader.style.display = 'block';
             hideError();
@@ -181,11 +158,7 @@
             formData.append('image', selectedFile);
 
             try {
-                const response = await fetch('/api/detect-image', {
-                    method: 'POST',
-                    body: formData
-                });
-
+                const response = await fetch('/api/detect-image', { method: 'POST', body: formData });
                 const data = await response.json();
 
                 if (data.success) {
@@ -201,23 +174,19 @@
             }
         });
 
+        // DISPLAY RESULTS — CLEAN TABLE: # | Behavior | Confidence
         function displayResults(data) {
-            // Show result image
             resultImage.src = data.image;
 
-            // Calculate summary statistics
             const uniqueBehaviors = new Set(data.detections.map(d => d.class)).size;
             document.getElementById('totalDetections').textContent = data.detections.length;
             document.getElementById('uniqueBehaviors').textContent = uniqueBehaviors;
 
-            // Display detections
             if (data.detections && data.detections.length > 0) {
                 summaryStats.style.display = 'block';
-                
+
                 detectionsTable.innerHTML = `
-                    <h4 style="margin-bottom: 1rem;">
-                        <i class="fas fa-table"></i> Detection Details
-                    </h4>
+                    <h4 style="margin-bottom: 1rem;">Detection Details</h4>
                     <div class="table-container">
                         <table class="detection-details-table">
                             <thead>
@@ -225,14 +194,13 @@
                                     <th>#</th>
                                     <th>Behavior Class</th>
                                     <th>Confidence</th>
-                                    <th>Bounding Box</th>
                                 </tr>
                             </thead>
                             <tbody id="detectionTableBody"></tbody>
                         </table>
                     </div>
                 `;
-                
+
                 const tbody = document.getElementById('detectionTableBody');
                 data.detections.forEach((det, idx) => {
                     const icon = getIconForBehavior(det.class);
@@ -247,7 +215,6 @@
                             </span>
                         </td>
                         <td><span class="confidence-badge">${det.confidence}</span></td>
-                        <td><code class="bbox-code">${det.bbox}</code></td>
                     `;
                     tbody.appendChild(row);
                 });
@@ -266,6 +233,7 @@
             resultContent.style.display = 'block';
         }
 
+        // Utility Functions
         function showError(message) {
             errorMessage.textContent = message;
             errorMessage.style.display = 'block';

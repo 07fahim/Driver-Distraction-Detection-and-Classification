@@ -1,6 +1,7 @@
 /* ========================================
    SAFEDRIVE AI - DETECTION PAGE STYLES
    Image & Video Detection Components
+   FIXED: Video controls overlap issue
    ======================================== */
 
 /* ========================================
@@ -87,7 +88,7 @@
 }
 
 /* ========================================
-   RESULT SECTION
+   RESULT SECTION - FIXED VIDEO LAYOUT
    ======================================== */
 .result-content {
     display: none;
@@ -96,21 +97,55 @@
 .result-image {
     width: 100%;
     border-radius: 10px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    display: block;
 }
 
-video {
-    width: 100%;
+/* VIDEO - CRITICAL FIX: Allow full height display */
+.result-section video,
+#resultVideo {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    min-height: auto !important;
+    display: block !important;
     border-radius: 10px;
-    margin-bottom: 1rem;
+    margin: 0 0 1.5rem 0;
+    object-fit: contain !important;
 }
 
+/* Remove any parent height constraints */
+.result-section {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 2rem;
+    min-height: 500px;
+    max-height: none !important; /* ADDED */
+    height: auto !important; /* ADDED */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: visible !important; /* ADDED */
+}
+
+/* Ensure video controls stay accessible */
+video::-webkit-media-controls-panel {
+    z-index: 100 !important;
+}
+
+video::-webkit-media-controls {
+    z-index: 100 !important;
+}
+
+/* ========================================
+   DETECTION TABLES & STATS
+   ======================================== */
 .detections-table {
     background: rgba(0, 0, 0, 0.2);
     border-radius: 10px;
     padding: 1rem;
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
+    margin-top: 1rem;
 }
 
 .detection-item {
@@ -132,12 +167,75 @@ video {
     font-weight: 700;
 }
 
+/* Summary Stats Cards */
+.stat-card {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    color: #34d399;
+    margin: 0.5rem 0;
+}
+
+.stat-card p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin: 0;
+}
+
+/* ========================================
+   VIDEO FALLBACK WARNING
+   ======================================== */
+#videoFallback {
+    background: rgba(255, 165, 0, 0.15);
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+#videoFallback i {
+    font-size: 3rem;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+#videoFallback h4 {
+    margin: 0.5rem 0;
+    color: #f59e0b;
+}
+
+#videoFallback p {
+    opacity: 0.8;
+    margin: 0.5rem 0;
+}
+
+/* ========================================
+   DOWNLOAD BUTTON
+   ======================================== */
+#downloadBtn {
+    display: inline-flex;
+    margin-bottom: 1rem;
+    width: auto;
+}
+
 /* ========================================
    RESPONSIVE - DETECTION PAGES
    ======================================== */
 @media (max-width: 968px) {
     .detection-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .detections-table {
+        max-height: 300px;
     }
 }
 
@@ -149,5 +247,14 @@ video {
 
     .upload-icon {
         font-size: 3rem;
+    }
+    
+    .stat-card h3 {
+        font-size: 2rem;
+    }
+    
+    #downloadBtn {
+        width: 100%;
+        justify-content: center;
     }
 }
