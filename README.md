@@ -291,7 +291,13 @@ Video detection returns JSON with video ID and summary statistics including tota
 **Platform:** Hugging Face Spaces  
 **Repository:** `main` branch, `deployment/` folder  
 **Runtime:** Python 3.12 with ONNX Runtime  
-**URL:** [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
+**Live URL:** [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
+
+**Application Demo:**
+
+https://github.com/user-attachments/assets/your-gradio-video-id.mp4
+
+*Interactive Gradio interface demonstration with image and video detection capabilities*
 
 **Deployment Process:**
 1. Code pushed to `main` branch triggers automatic rebuild
@@ -312,7 +318,14 @@ Video detection returns JSON with video ID and summary statistics including tota
 **Repository:** `flask` branch  
 **Container:** Docker with Python 3.12-slim base  
 **Web Server:** Gunicorn with 2 workers, 300-second timeout  
-**CI/CD:** GitHub Actions automated deployment
+**CI/CD:** GitHub Actions automated deployment  
+**Live URL:** [Insert Your Render URL Here]
+
+**Application Demo:**
+
+https://github.com/user-attachments/assets/your-flask-video-id.mp4
+
+*Complete Flask web application walkthrough showing all features and detection capabilities*
 
 **Deployment Process:**
 1. Code pushed to `flask` branch
