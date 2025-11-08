@@ -321,8 +321,6 @@ docker run -p 5000:5000 safedrive-ai
 
 ### Gradio Interface
 
-Access the interactive Gradio interface at [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
-
 **Features:**
 - Upload images or videos via drag-and-drop
 - Real-time detection with confidence scores
@@ -331,8 +329,6 @@ Access the interactive Gradio interface at [https://huggingface.co/spaces/yeager
 - Webcam support for live detection
 
 ### Flask Web Application
-
-Access the Flask web interface at your deployed URL.
 
 **Available Pages:**
 - **Home** - Overview and features
@@ -535,7 +531,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Project Links:**
 - Gradio App: [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
-- Flask App: [Your Render URL]([#](https://driver-distraction-detection-and.onrender.com))
+- Flask App: [https://driver-distraction-detection-and.onrender.com]([#](https://driver-distraction-detection-and.onrender.com))
 - Dataset: [Roboflow Universe](https://universe.roboflow.com/flytech/distracted-driving-v2wk5-f5vtj/dataset/1)
 
 ---
