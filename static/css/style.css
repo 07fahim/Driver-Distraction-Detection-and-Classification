@@ -56,12 +56,12 @@ nav a:hover {
 }
 
 /* ========================================
-   CONTAINER & HEADINGS - UPDATED
+   CONTAINER & HEADINGS
    ======================================== */
 .container {
-    max-width: 95%; /* CHANGED from 1400px to 95% for maximum width */
+    max-width: 95%;
     margin: 3rem auto;
-    padding: 0 2.5%; /* CHANGED from 0 5% for wider layout */
+    padding: 0 2.5%;
 }
 
 h1 {
@@ -164,6 +164,84 @@ h1 {
 }
 
 /* ========================================
+   FOOTER STYLES
+   ======================================== */
+.footer {
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 4rem;
+    padding: 3rem 0 1.5rem;
+}
+
+.footer-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.footer-content {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.footer-content h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #34d399;
+}
+
+.footer-description {
+    font-size: 1rem;
+    opacity: 0.8;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.social-link {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #fff;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-link:hover {
+    background: #34d399;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(52, 211, 153, 0.4);
+}
+
+.social-link svg {
+    width: 24px;
+    height: 24px;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-bottom p {
+    font-size: 0.9rem;
+    opacity: 0.7;
+}
+
+/* ========================================
    RESPONSIVE DESIGN
    ======================================== */
 @media (max-width: 968px) {
@@ -196,5 +274,32 @@ h1 {
     .container {
         max-width: 100%;
         padding: 0 3%;
+    }
+    
+    /* Footer Responsive */
+    .footer {
+        padding: 2rem 0 1rem;
+    }
+    
+    .footer-content h4 {
+        font-size: 1.2rem;
+    }
+    
+    .footer-description {
+        font-size: 0.9rem;
+    }
+    
+    .social-links {
+        gap: 1rem;
+    }
+    
+    .social-link {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .social-link svg {
+        width: 20px;
+        height: 20px;
     }
 }
