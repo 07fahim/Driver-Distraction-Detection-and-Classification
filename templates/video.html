@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Detection - SafeDrive AI</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>Car</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -27,23 +27,29 @@
         <h1><i class="fas fa-video"></i> Video Detection</h1>
 
         <div class="detection-grid">
-            <!-- Upload -->
+            <!-- Upload Section -->
             <div class="upload-section">
                 <div class="section-title"><i class="fas fa-upload"></i> Upload Video File</div>
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-cloud-upload-alt upload-icon"></i>
                     <h3>Drag & Drop Video Here</h3>
                     <p>or click to browse</p>
-                    <p style="opacity:0.6;margin-top:1rem;">Supported: MP4, AVI, MOV</p>
+                    <p style="opacity:0.6;margin-top:1rem;">Supported: MP4, AVI, MOV (Max 100MB)</p>
                     <input type="file" id="videoInput" accept="video/*" style="display:none;">
                     <video id="preview-video" controls style="display:none;max-width:100%;max-height:400px;border-radius:10px;"></video>
                 </div>
-                <button class="btn btn-detect" id="detectBtn" disabled></i> Detect Distractions</button>
+                <button class="btn btn-detect" id="detectBtn" disabled>
+                    <i class="fas fa-search"></i> Detect Distractions
+                </button>
                 <div class="loader" id="loader"></div>
+                <div class="progress-info" id="progressInfo" style="display:none;text-align:center;margin-top:1rem;">
+                    <p style="color:#34d399;font-weight:600;">Processing video... This may take a few minutes.</p>
+                    <p style="opacity:0.7;font-size:0.9rem;margin-top:0.5rem;">Please do not close this window.</p>
+                </div>
                 <div class="error-message" id="errorMessage"></div>
             </div>
 
-            <!-- Result -->
+            <!-- Result Section -->
             <div class="result-section">
                 <div class="section-title"><i class="fas fa-chart-bar"></i> Detection Results</div>
 
@@ -53,7 +59,7 @@
                 </div>
 
                 <div class="result-content" id="resultContent" style="display:none;">
-                    <!-- VIDEO + OVERLAY + FPS -->
+                    <!-- Video Player Wrapper -->
                     <div class="video-player-wrapper">
                         <video id="resultVideo" controls preload="metadata" crossorigin="anonymous">
                             <source id="videoSource" type="video/mp4">
@@ -65,33 +71,36 @@
                         </div>
                     </div>
 
-                    <!-- Fallback -->
+                    <!-- Video Fallback -->
                     <div id="videoFallback" style="display:none;">
                         <i class="fas fa-exclamation-triangle"></i>
                         <h4>Browser Playback Not Available</h4>
-                        <p>Use the Download button below.</p>
+                        <p>Your browser cannot play this video format.</p>
+                        <p>Use the Download button below to view the processed video.</p>
                     </div>
 
-                    <!-- Download -->
+                    <!-- Download Button -->
                     <a href="#" id="downloadBtn" class="btn btn-primary" style="display:none;margin-bottom:1rem;">
                         <i class="fas fa-download"></i> Download Processed Video
                     </a>
 
-                    <!-- Stats -->
+                    <!-- Summary Stats -->
                     <div id="summaryStats" style="display:none;margin-bottom:1rem;">
                         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;">
                             <div class="stat-card">
                                 <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#34d399;margin-bottom:0.5rem;"></i>
-                                <h3 id="totalBehaviors">0</h3><p>Behaviors Detected</p>
+                                <h3 id="totalBehaviors">0</h3>
+                                <p>Behaviors Detected</p>
                             </div>
                             <div class="stat-card">
                                 <i class="fas fa-film" style="font-size:2rem;color:#34d399;margin-bottom:0.5rem;"></i>
-                                <h3 id="totalDetections">0</h3><p>Total Detections</p>
+                                <h3 id="totalDetections">0</h3>
+                                <p>Total Detections</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Summary Cards -->
+                    <!-- Detection Summary Cards -->
                     <div class="detections-table" id="detectionsTable"></div>
                 </div>
             </div>
@@ -99,12 +108,15 @@
     </div>
 
     <script>
-        // DOM
+        // ==========================================
+        // DOM ELEMENTS
+        // ==========================================
         const uploadArea = document.getElementById('uploadArea');
         const videoInput = document.getElementById('videoInput');
         const previewVideo = document.getElementById('preview-video');
         const detectBtn = document.getElementById('detectBtn');
         const loader = document.getElementById('loader');
+        const progressInfo = document.getElementById('progressInfo');
         const errorMessage = document.getElementById('errorMessage');
         const placeholder = document.getElementById('placeholder');
         const resultContent = document.getElementById('resultContent');
@@ -121,10 +133,13 @@
         let selectedFile = null;
         let currentVideoId = null;
 
-        // FPS variables
+        // FPS tracking variables
         let startTime = 0, frameCount = 0, lastFps = 0, currentFrame = 0;
         let fpsTrack = null, fpsCue = null;
 
+        // ==========================================
+        // BEHAVIOR ICONS MAPPING
+        // ==========================================
         const behaviorIcons = {
             'c0 - Safe Driving': 'fa-check-circle',
             'c1 - Texting': 'fa-mobile-alt',
@@ -139,41 +154,107 @@
             'd2 - Nodding Off': 'fa-bed',
             'd3 - Eyes Open': 'fa-eye'
         };
-        const getIcon = b => behaviorIcons[b] || 'fa-exclamation-triangle';
+        
+        const getIcon = behavior => behaviorIcons[behavior] || 'fa-exclamation-triangle';
 
-        // Upload
+        // ==========================================
+        // FILE UPLOAD HANDLING
+        // ==========================================
         uploadArea.addEventListener('click', () => videoInput.click());
+        
         videoInput.addEventListener('change', e => handleFile(e.target.files[0]));
-        uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('dragover'); });
-        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
-        uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.classList.remove('dragover'); handleFile(e.dataTransfer.files[0]); });
+        
+        uploadArea.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
 
         function handleFile(file) {
-            if (!file || !file.type.startsWith('video/')) { showError('Invalid video file'); return; }
+            if (!file || !file.type.startsWith('video/')) {
+                showError('Please select a valid video file (MP4, AVI, MOV)');
+                return;
+            }
+            
+            // Check file size (100MB limit)
+            const maxSize = 100 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showError('File too large. Maximum size is 100MB.');
+                return;
+            }
+            
             selectedFile = file;
             const url = URL.createObjectURL(file);
-            previewVideo.src = url; previewVideo.style.display = 'block';
+            
+            previewVideo.src = url;
+            previewVideo.style.display = 'block';
+            
             uploadArea.querySelector('.upload-icon').style.display = 'none';
             uploadArea.querySelector('h3').style.display = 'none';
             uploadArea.querySelectorAll('p').forEach(p => p.style.display = 'none');
-            detectBtn.disabled = false; hideError(); hideResults();
+            
+            detectBtn.disabled = false;
+            hideError();
+            hideResults();
         }
 
-        // Detect
+        // ==========================================
+        // DETECTION API CALL
+        // ==========================================
         detectBtn.addEventListener('click', async () => {
             if (!selectedFile) return;
-            detectBtn.disabled = true; loader.style.display = 'block'; hideError(); hideResults();
-            const fd = new FormData(); fd.append('video', selectedFile);
+            
+            detectBtn.disabled = true;
+            loader.style.display = 'block';
+            progressInfo.style.display = 'block';
+            hideError();
+            hideResults();
+            
+            const formData = new FormData();
+            formData.append('video', selectedFile);
+            
             try {
-                const r = await fetch('/api/detect-video', { method: 'POST', body: fd });
-                const d = await r.json();
-                if (d.success) { currentVideoId = d.video_id; displayVideoResults(d); }
-                else showError(d.error || 'Detection failed');
-            } catch (e) { showError('Network error: ' + e.message); }
-            finally { loader.style.display = 'none'; detectBtn.disabled = false; }
+                const response = await fetch('/api/detect-video', {
+                    method: 'POST',
+                    body: formData,
+                    signal: AbortSignal.timeout(300000) // 5 minute timeout
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    currentVideoId = data.video_id;
+                    displayVideoResults(data);
+                } else {
+                    showError(data.error || 'Detection failed. Please try again.');
+                }
+            } catch (error) {
+                if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+                    showError('⏱️ Request timeout. The video may be too long. Please try a shorter video (max 2-3 minutes recommended).');
+                } else if (error.message.includes('Failed to fetch')) {
+                    showError('🌐 Network error. Please check your connection and try again.');
+                } else {
+                    showError('❌ Error: ' + error.message);
+                }
+            } finally {
+                loader.style.display = 'none';
+                progressInfo.style.display = 'none';
+                detectBtn.disabled = false;
+            }
         });
 
-        // FPS & Frame (normal + full-screen)
+        // ==========================================
+        // FPS & FRAME COUNTER
+        // ==========================================
         function updateFPS() {
             if (resultVideo.paused || resultVideo.ended) {
                 fpsValue.textContent = lastFps || '0';
@@ -198,10 +279,10 @@
             currentFrame = Math.min(Math.floor(resultVideo.currentTime * VIDEO_FPS), totalFrames - 1);
             frameValue.textContent = currentFrame;
 
-            // Create FPS track if not exists
+            // Create FPS track for fullscreen if not exists
             if (!fpsTrack) {
                 fpsTrack = resultVideo.addTextTrack('metadata', 'fps', 'en');
-                fpsTrack.mode = 'showing'; // CRITICAL: Enable the track
+                fpsTrack.mode = 'showing';
                 fpsCue = new VTTCue(0, 999999, '');
                 fpsCue.align = 'end';
                 fpsCue.line = 1;
@@ -217,7 +298,9 @@
             requestAnimationFrame(updateFPS);
         }
         
-        // Fullscreen detection
+        // ==========================================
+        // FULLSCREEN DETECTION
+        // ==========================================
         function handleFullscreenChange() {
             const isFullscreen = document.fullscreenElement === resultVideo || 
                                 document.webkitFullscreenElement === resultVideo ||
@@ -225,113 +308,167 @@
                                 document.msFullscreenElement === resultVideo;
             
             if (isFullscreen) {
-                // Enable text tracks in fullscreen
                 Array.from(resultVideo.textTracks).forEach(track => {
                     track.mode = 'showing';
                 });
             }
         }
         
-        // Listen for fullscreen changes
         document.addEventListener('fullscreenchange', handleFullscreenChange);
         document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
         document.addEventListener('mozfullscreenchange', handleFullscreenChange);
         document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
-        // Overlay (normal + fullscreen)
+        // ==========================================
+        // DETECTION OVERLAY (NORMAL + FULLSCREEN)
+        // ==========================================
         function updateDetectionOverlay(detections) {
             const overlay = detectionOverlay;
             const video = resultVideo;
 
+            // Remove old detection tracks
             while (video.textTracks.length > 1) {
-                const t = video.textTracks[1];
-                if (t.label !== 'fps') video.removeTextTrack(t);
+                const track = video.textTracks[1];
+                if (track.label !== 'fps') video.removeTextTrack(track);
             }
 
             if (detections && detections.length) {
-                overlay.innerHTML = ''; overlay.style.display = 'flex';
+                overlay.innerHTML = '';
+                overlay.style.display = 'flex';
+                
                 let vtt = 'WEBVTT\n\n';
+                
                 detections.forEach(det => {
                     const icon = getIcon(det.class);
                     const conf = parseFloat(det.confidence).toFixed(1);
                     const label = det.class.replace(/^(c\d+|d\d+) - /, '');
 
+                    // Normal view overlay
                     const div = document.createElement('div');
                     div.innerHTML = `
-                        <div class="detection-item"><span><i class="fas ${icon}"></i> ${label}</span><span>${conf}%</span></div>
-                        <div class="confidence-bar"><div class="confidence-fill" style="width:${conf}%"></div></div>
+                        <div class="detection-item">
+                            <span><i class="fas ${icon}"></i> ${label}</span>
+                            <span>${conf}%</span>
+                        </div>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width:${conf}%"></div>
+                        </div>
                     `;
                     overlay.appendChild(div);
 
+                    // Fullscreen VTT cue
                     vtt += `00:00:00.000 --> 99:99:99.999\n`;
                     vtt += `<v.detection-cue><div class="item"><span><i class="fas ${icon}"></i> ${label}</span><span>${conf}%</span></div><div class="bar"><div class="fill" style="width:${conf}%"></div></div></v.detection-cue>\n\n`;
                 });
 
+                // Add VTT track for fullscreen
                 const track = document.createElement('track');
-                track.kind = 'metadata'; track.label = 'detection'; track.srclang = 'en';
+                track.kind = 'metadata';
+                track.label = 'detection';
+                track.srclang = 'en';
                 track.src = URL.createObjectURL(new Blob([vtt], { type: 'text/vtt' }));
                 video.appendChild(track);
             } else {
-                overlay.innerHTML = ''; overlay.style.display = 'none';
+                overlay.innerHTML = '';
+                overlay.style.display = 'none';
             }
         }
 
-        // Display results
+        // ==========================================
+        // DISPLAY VIDEO RESULTS
+        // ==========================================
         function displayVideoResults(data) {
             const url = `/api/download-video/${currentVideoId}?t=${Date.now()}`;
-            videoSource.src = url; resultVideo.load();
+            videoSource.src = url;
+            resultVideo.load();
 
             resultVideo.style.display = data.browser_playback === 'download' ? 'none' : 'block';
             videoFallback.style.display = data.browser_playback === 'download' ? 'block' : 'none';
 
-            downloadBtn.href = url; downloadBtn.download = 'detected_video.mp4'; downloadBtn.style.display = 'inline-flex';
+            downloadBtn.href = url;
+            downloadBtn.download = `safedrive_detected_${currentVideoId}.mp4`;
+            downloadBtn.style.display = 'inline-flex';
 
-            const totalBeh = data.summary.length;
-            const totalDet = data.summary.reduce((s, i) => s + parseInt(i.total_detections || 0), 0);
-            document.getElementById('totalBehaviors').textContent = totalBeh;
-            document.getElementById('totalDetections').textContent = totalDet;
-            summaryStats.style.display = totalBeh ? 'block' : 'none';
+            // Calculate summary stats
+            const totalBehaviors = data.summary.length;
+            const totalDetections = data.summary.reduce((sum, item) => sum + parseInt(item.total_detections || 0), 0);
+            
+            document.getElementById('totalBehaviors').textContent = totalBehaviors;
+            document.getElementById('totalDetections').textContent = totalDetections;
+            summaryStats.style.display = totalBehaviors ? 'block' : 'none';
 
+            // Update detection overlay
             updateDetectionOverlay(data.frame_detections?.[0] || []);
 
             // Clean old FPS track
-            Array.from(resultVideo.textTracks).forEach(t => {
-                if (t.label === 'fps') resultVideo.removeTextTrack(t);
+            Array.from(resultVideo.textTracks).forEach(track => {
+                if (track.label === 'fps') resultVideo.removeTextTrack(track);
             });
-            fpsTrack = null; fpsCue = null;
+            fpsTrack = null;
+            fpsCue = null;
 
-            // Reset FPS
-            startTime = 0; frameCount = 0; lastFps = 0; currentFrame = 0;
-            fpsValue.textContent = '0'; frameValue.textContent = '0';
+            // Reset FPS counters
+            startTime = 0;
+            frameCount = 0;
+            lastFps = 0;
+            currentFrame = 0;
+            fpsValue.textContent = '0';
+            frameValue.textContent = '0';
 
-            // Summary cards
+            // Generate summary cards
             if (data.summary && data.summary.length) {
-                detectionsTable.innerHTML = `<h4 style="margin-bottom:1rem;"><i class="fas fa-chart-line"></i> Video Detection Summary</h4><div id="summaryCardsContainer" style="display:grid;gap:1rem;"></div>`;
-                const cont = document.getElementById('summaryCardsContainer');
-                data.summary.forEach((it, idx) => {
-                    const ic = getIcon(it.behavior);
+                detectionsTable.innerHTML = `
+                    <h4 style="margin-bottom:1rem;">
+                        <i class="fas fa-chart-line"></i> Video Detection Summary
+                    </h4>
+                    <div id="summaryCardsContainer" style="display:grid;gap:1rem;"></div>
+                `;
+                
+                const container = document.getElementById('summaryCardsContainer');
+                
+                data.summary.forEach((item, index) => {
+                    const icon = getIcon(item.behavior);
                     const card = document.createElement('div');
                     card.className = 'summary-card';
-                    card.style.animationDelay = `${idx * 0.1}s`;
+                    card.style.animationDelay = `${index * 0.1}s`;
                     card.innerHTML = `
                         <div class="summary-card-header">
-                            <div class="summary-card-title"><i class="fas ${ic}"></i> ${it.behavior}</div>
-                            <div class="summary-card-badge">${it.total_detections} detections</div>
+                            <div class="summary-card-title">
+                                <i class="fas ${icon}"></i> ${item.behavior}
+                            </div>
+                            <div class="summary-card-badge">${item.total_detections} detections</div>
                         </div>
                         <div class="summary-card-details">
-                            <div class="summary-card-detail"><span class="summary-card-detail-label">Avg Confidence</span><span class="summary-card-detail-value">${it.avg_confidence}</span></div>
-                            <div class="summary-card-detail"><span class="summary-card-detail-label">Frame Range</span><span class="summary-card-detail-value">${it.frame_range}</span></div>
-                            <div class="summary-card-detail"><span class="summary-card-detail-label">Duration</span><span class="summary-card-detail-value">${it.duration}</span></div>
-                        </div>`;
-                    cont.appendChild(card);
+                            <div class="summary-card-detail">
+                                <span class="summary-card-detail-label">Avg Confidence</span>
+                                <span class="summary-card-detail-value">${item.avg_confidence}</span>
+                            </div>
+                            <div class="summary-card-detail">
+                                <span class="summary-card-detail-label">Frame Range</span>
+                                <span class="summary-card-detail-value">${item.frame_range}</span>
+                            </div>
+                            <div class="summary-card-detail">
+                                <span class="summary-card-detail-label">Duration</span>
+                                <span class="summary-card-detail-value">${item.duration}</span>
+                            </div>
+                        </div>
+                    `;
+                    container.appendChild(card);
                 });
             } else {
-                detectionsTable.innerHTML = `<div style="text-align:center;padding:2rem;"><i class="fas fa-check-circle" style="font-size:3rem;color:#34d399;margin-bottom:1rem;"></i><h3>No Distractions Detected</h3><p style="opacity:0.7;">Driver appears to be driving safely throughout the video</p></div>`;
+                detectionsTable.innerHTML = `
+                    <div style="text-align:center;padding:2rem;">
+                        <i class="fas fa-check-circle" style="font-size:3rem;color:#34d399;margin-bottom:1rem;"></i>
+                        <h3>No Distractions Detected</h3>
+                        <p style="opacity:0.7;">Driver appears to be driving safely throughout the video</p>
+                    </div>
+                `;
             }
 
             placeholder.style.display = 'none';
             resultContent.style.display = 'block';
 
+            // Setup video event handlers
             resultVideo.onplay = () => requestAnimationFrame(updateFPS);
             resultVideo.onpause = resultVideo.onended = () => {
                 fpsValue.textContent = lastFps || '0';
@@ -339,18 +476,38 @@
             };
         }
 
-        // Utils
-        function showError(m) { errorMessage.textContent = m; errorMessage.style.display = 'block'; }
-        function hideError() { errorMessage.style.display = 'none'; }
+        // ==========================================
+        // UTILITY FUNCTIONS
+        // ==========================================
+        function showError(message) {
+            errorMessage.innerHTML = message;
+            errorMessage.style.display = 'block';
+            errorMessage.style.background = 'rgba(239, 68, 68, 0.2)';
+            errorMessage.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+            errorMessage.style.color = '#ef4444';
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
         function hideResults() {
-            placeholder.style.display = 'block'; resultContent.style.display = 'none';
-            downloadBtn.style.display = 'none'; summaryStats.style.display = 'none';
-            resultVideo.style.display = 'none'; videoFallback.style.display = 'none';
+            placeholder.style.display = 'block';
+            resultContent.style.display = 'none';
+            downloadBtn.style.display = 'none';
+            summaryStats.style.display = 'none';
+            resultVideo.style.display = 'none';
+            videoFallback.style.display = 'none';
             detectionOverlay.style.display = 'none';
-            fpsValue.textContent = '0'; frameValue.textContent = '0';
+            fpsValue.textContent = '0';
+            frameValue.textContent = '0';
         }
 
-        resultVideo.addEventListener('error', () => { resultVideo.style.display = 'none'; videoFallback.style.display = 'block'; });
+        // Handle video load errors
+        resultVideo.addEventListener('error', () => {
+            resultVideo.style.display = 'none';
+            videoFallback.style.display = 'block';
+        });
     </script>
 </body>
 </html>

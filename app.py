@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, jsonify, send_file
 from gradio_client import Client, handle_file
-from pathlib import Path  # ← CROSS-PLATFORM PATHS
+from pathlib import Path
 import base64
 import shutil
 from werkzeug.utils import secure_filename
 import uuid
+import threading
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB max
@@ -19,7 +20,17 @@ result_dir.mkdir(parents=True, exist_ok=True)
 
 # Initialize Gradio Client
 HF_SPACE = "yeager07/distracted-driving-detection"
-client = Client(HF_SPACE)
+client = None
+
+def get_client():
+    """Lazy load client to avoid startup issues"""
+    global client
+    if client is None:
+        try:
+            client = Client(HF_SPACE)
+        except Exception as e:
+            print(f"Client init warning: {e}")
+    return client
 
 # =========================
 # ROUTES
@@ -45,6 +56,9 @@ def about_page():
 # =========================
 @app.route('/api/detect-image', methods=['POST'])
 def detect_image():
+    temp_path = None
+    output_image_path = None
+    
     try:
         if 'image' not in request.files:
             return jsonify({'success': False, 'error': 'No image uploaded'}), 400
@@ -56,17 +70,22 @@ def detect_image():
         # Save uploaded file to /tmp/uploads
         filename = secure_filename(file.filename)
         temp_path = upload_dir / f"{uuid.uuid4()}_{filename}"
-        file.save(str(temp_path))  # ← str() for Windows
+        file.save(str(temp_path))
         
         try:
+            # Get or initialize client
+            api_client = get_client()
+            if api_client is None:
+                return jsonify({'success': False, 'error': 'API service unavailable'}), 503
+            
             # Call Hugging Face API
-            result = client.predict(
+            result = api_client.predict(
                 image=handle_file(str(temp_path)),
                 api_name="/predict_image"
             )
             
             # Parse result
-            output_image_path = Path(result[0])  # ← Path object
+            output_image_path = Path(result[0])
             detection_table = result[1]
             
             # Read output image as base64
@@ -99,8 +118,9 @@ def detect_image():
         
         finally:
             # Cleanup
-            temp_path.unlink(missing_ok=True)
-            if output_image_path.exists():
+            if temp_path and temp_path.exists():
+                temp_path.unlink(missing_ok=True)
+            if output_image_path and output_image_path.exists():
                 output_image_path.unlink(missing_ok=True)
     
     except Exception as e:
@@ -111,6 +131,8 @@ def detect_image():
 # =========================
 @app.route('/api/detect-video', methods=['POST'])
 def detect_video():
+    temp_path = None
+    
     try:
         if 'video' not in request.files:
             return jsonify({'success': False, 'error': 'No video uploaded'}), 400
@@ -126,8 +148,13 @@ def detect_video():
         file.save(str(temp_path))
         
         try:
+            # Get or initialize client
+            api_client = get_client()
+            if api_client is None:
+                return jsonify({'success': False, 'error': 'API service unavailable'}), 503
+            
             # Call HF API
-            result = client.predict(
+            result = api_client.predict(
                 video_path={"video": handle_file(str(temp_path))},
                 api_name="/predict_video"
             )
@@ -166,7 +193,8 @@ def detect_video():
             })
         
         finally:
-            temp_path.unlink(missing_ok=True)
+            if temp_path and temp_path.exists():
+                temp_path.unlink(missing_ok=True)
     
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
