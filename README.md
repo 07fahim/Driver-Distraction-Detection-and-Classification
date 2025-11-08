@@ -531,7 +531,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Project Links:**
 - Gradio App: [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
-- Flask App: [https://driver-distraction-detection-and.onrender.com]([#](https://driver-distraction-detection-and.onrender.com))
+- Flask App: [https://driver-distraction-detection-and.onrender.com](https://driver-distraction-detection-and.onrender.com)
 - Dataset: [Roboflow Universe](https://universe.roboflow.com/flytech/distracted-driving-v2wk5-f5vtj/dataset/1)
 
 ---
