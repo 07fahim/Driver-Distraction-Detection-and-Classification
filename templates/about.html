@@ -279,13 +279,42 @@
             <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
                 <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-code-branch"></i> Deployment Workflow</h3>
                 <ol style="margin-left: 1.5rem; line-height: 1.8;">
-                    <li><strong>Code Push:</strong> Developer pushes code to GitHub repository</li>
-                    <li><strong>GitHub Actions:</strong> Automated CI/CD pipeline triggers on push</li>
-                    <li><strong>Docker Build:</strong> Application containerized with all dependencies</li>
-                    <li><strong>Render Deployment:</strong> Docker image deployed to Render.com infrastructure</li>
+                    <li><strong>Code Push:</strong> Developer pushes code to GitHub repository (flask branch)</li>
+                    <li><strong>GitHub Actions:</strong> Automated CI/CD pipeline triggers on push to flask branch</li>
+                    <li><strong>Docker Build:</strong> Application containerized with Python 3.12-slim base image</li>
+                    <li><strong>Dependencies:</strong> Flask, Gradio Client, Werkzeug, Gunicorn installed via pip</li>
+                    <li><strong>Render Deployment:</strong> Docker image deployed via Render API with cache clearing</li>
                     <li><strong>HF Spaces API:</strong> Flask backend communicates with Hugging Face model endpoint</li>
+                    <li><strong>Gunicorn Server:</strong> Production WSGI server with 2 workers and 5-minute timeout</li>
                     <li><strong>Live Application:</strong> Production-ready web app accessible globally</li>
                 </ol>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-docker"></i> Docker Configuration</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Base Image:</strong> Python 3.12-slim (Debian Trixie)</li>
+                    <li><strong>System Dependencies:</strong> libgl1, libglib2.0-0 for OpenCV compatibility</li>
+                    <li><strong>Working Directory:</strong> /app</li>
+                    <li><strong>Exposed Port:</strong> 5000</li>
+                    <li><strong>Temp Directories:</strong> /tmp/uploads and /tmp/results for file processing</li>
+                    <li><strong>Server:</strong> Gunicorn WSGI server for production deployment</li>
+                    <li><strong>Workers:</strong> 2 sync workers with 300-second timeout for video processing</li>
+                    <li><strong>Memory Optimization:</strong> Worker temp directory in /dev/shm (RAM)</li>
+                </ul>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-cog"></i> Production Configuration</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Max File Size:</strong> 100MB for video uploads</li>
+                    <li><strong>Auto Cleanup:</strong> Files older than 1 hour automatically removed</li>
+                    <li><strong>Lazy Client Loading:</strong> Gradio client initialized on first request</li>
+                    <li><strong>Error Handling:</strong> Custom error handlers for 413 and 500 status codes</li>
+                    <li><strong>Worker Management:</strong> Max 100 requests per worker with jitter</li>
+                    <li><strong>Logging:</strong> Access and error logs to stdout/stderr</li>
+                    <li><strong>Keepalive:</strong> 5-second connection keepalive</li>
+                </ul>
             </div>
 
             <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
@@ -309,9 +338,8 @@
             <h2><i class="fas fa-envelope"></i> Contact & Support</h2>
             <p>For more information, partnership opportunities, API access, or technical support:</p>
             <ul>
-                <li><strong>Email:</strong> contact@safedrive-ai.com</li>
-                <li><strong>Technical Support:</strong> support@safedrive-ai.com</li>
-                <li><strong>Phone:</strong> +1 (555) 123-4567</li>
+                <li><strong>Email:</strong> faiyazfahim743@gmail.com</li>
+                <li><strong>Phone:</strong> +88 01852153575 </li>
                 <li><strong>Hugging Face Space:</strong> <a href="https://huggingface.co/spaces/yeager07/distracted-driving-detection" target="_blank" style="color: #34d399;">yeager07/distracted-driving-detection</a></li>
             </ul>
 
