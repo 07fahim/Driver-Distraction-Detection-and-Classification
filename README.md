@@ -173,12 +173,70 @@ SafeDrive AI is an advanced computer vision system designed to detect and preven
 ┌─────────────────────────────────────────────────────────────┐
 │                    AI Models (ONNX)                          │
 │  ┌─────────────────────────────────────────────────┐        │
-│  │  YOLOv10S Detection Model (best.onnx)          │        │
+│  │  YOLOv10n Detection Model (best.onnx)          │        │
 │  │  - 12 behavior classes                          │        │
 │  │  - 640x640 input size                           │        │
 │  │  - 98.1% mAP@50 accuracy                        │        │
 │  └─────────────────────────────────────────────────┘        │
 └─────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow Architecture
+
+```
+┌─────────────┐
+│    USER     │
+└──────┬──────┘
+       │ Upload Image/Video
+       ▼
+┌─────────────────────────────────┐
+│  WEB INTERFACE                  │
+│  • Drag & Drop Upload           │
+│  • File Validation              │
+│  • UI Feedback                  │
+└──────┬──────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────┐
+│  PREPROCESSING                  │
+│  • Resize: 640×640              │
+│  • Normalize: [0-1]             │
+│  • Color: BGR→RGB               │
+│  • Format: HWC→CHW              │
+└──────┬──────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────┐
+│  ONNX INFERENCE ENGINE          │
+│  • Load Model                   │
+│  • Run Prediction               │
+│  • Extract Features             │
+└──────┬──────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────┐
+│  POST-PROCESSING                │
+│  • Parse Predictions            │
+│  • Filter (Conf > 25%)          │
+│  • Scale Coordinates            │
+│  • Class Mapping                │
+└──────┬──────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────┐
+│  VISUALIZATION                  │
+│  • Text Overlay                 │
+│  • Confidence Scores            │
+│  • Detection Summary            │
+└──────┬──────────────────────────┘
+       │
+       ▼
+┌─────────────────────────────────┐
+│  RESPONSE TO USER               │
+│  • Annotated Media              │
+│  • Statistics Table             │
+│  • Download Option              │
+└─────────────────────────────────┘
 ```
 
 ### Processing Pipeline
@@ -305,7 +363,6 @@ Video detection returns JSON with video ID and summary statistics including tota
 **Platform:** Hugging Face Spaces  
 **Repository:** `main` branch, `deployment/` folder  
 **Runtime:** Python 3.12 with ONNX Runtime  
-**Live URL:** [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
 
 **Application Demo:**
 
@@ -473,14 +530,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Project Maintainer:** Your Name
 
-- Email: contact@safedrive-ai.com
-- Website: [safedrive-ai.com](#)
-- LinkedIn: [Your LinkedIn](#)
-- GitHub: [@yourusername](https://github.com/yourusername)
+- Email: faiyazfahim743@gmail.com
+- LinkedIn: [Your LinkedIn]([#](https://www.linkedin.com/in/fahim-faiyaz))
 
 **Project Links:**
 - Gradio App: [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
-- Flask App: [Your Render URL](#)
+- Flask App: [Your Render URL]([#](https://driver-distraction-detection-and.onrender.com))
 - Dataset: [Roboflow Universe](https://universe.roboflow.com/flytech/distracted-driving-v2wk5-f5vtj/dataset/1)
 
 ---
