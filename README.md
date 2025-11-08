@@ -152,19 +152,33 @@ SafeDrive AI is an advanced computer vision system designed to detect and preven
 ### System Flow
 
 ```
-User Interface Layer
-├── Gradio App (HF Spaces)
-└── Flask App (Render.com)
-        ↓
-Backend Services
-├── ONNX Runtime (Local Inference)
-└── Gradio Client API (HF Spaces)
-        ↓
-AI Model Layer
-└── YOLOv10S Detection Model (best.onnx)
-    ├── 12 behavior classes
-    ├── 640×640 input size
-    └── 98.1% mAP@50 accuracy
+┌─────────────────────────────────────────────────────────────┐
+│                      User Interface                          │
+│  ┌──────────────┐              ┌──────────────┐            │
+│  │ Gradio App   │              │  Flask App   │            │
+│  │ (HF Spaces)  │              │ (Render.com) │            │
+│  └──────┬───────┘              └──────┬───────┘            │
+└─────────┼──────────────────────────────┼──────────────────┘
+          │                              │
+          ▼                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    Backend Services                          │
+│  ┌─────────────────────┐      ┌─────────────────────┐      │
+│  │  ONNX Runtime       │      │  Gradio Client API  │      │
+│  │  (Local Inference)  │      │  (HF Spaces)        │      │
+│  └─────────┬───────────┘      └─────────┬───────────┘      │
+└────────────┼──────────────────────────────┼──────────────────┘
+             │                              │
+             ▼                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    AI Models (ONNX)                          │
+│  ┌─────────────────────────────────────────────────┐        │
+│  │  YOLOv10S Detection Model (best.onnx)          │        │
+│  │  - 12 behavior classes                          │        │
+│  │  - 640x640 input size                           │        │
+│  │  - 98.1% mAP@50 accuracy                        │        │
+│  └─────────────────────────────────────────────────┘        │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ### Processing Pipeline
