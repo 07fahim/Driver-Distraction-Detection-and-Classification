@@ -261,15 +261,50 @@
                 <li><strong>Research Institutions:</strong> Study driver behavior patterns and develop safety interventions</li>
             </ul>
 
-            <h2><i class="fas fa-rocket"></i> Deployment</h2>
-            <p>SafeDrive AI offers flexible deployment options:</p>
-            <ul>
-                <li><strong>Hugging Face Spaces:</strong> Interactive Gradio interface available at <a href="https://huggingface.co/spaces/yeager07/distracted-driving-detection" target="_blank" style="color: #34d399;">yeager07/distracted-driving-detection</a></li>
-                <li><strong>Local Deployment:</strong> Flask-based web application using local ONNX inference for faster response times</li>
-                <li><strong>High Performance:</strong> Optimized for CPU execution with minimal latency</li>
-                <li><strong>No API Dependency:</strong> All processing runs locally for maximum speed and reliability</li>
-                <li><strong>Easy Integration:</strong> RESTful API endpoints for seamless integration into existing systems</li>
-            </ul>
+            <h2><i class="fas fa-rocket"></i> Deployment Architecture</h2>
+            <p>SafeDrive AI is deployed using a modern, scalable cloud infrastructure:</p>
+            
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-server"></i> Production Deployment</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>Platform:</strong> Render.com (Cloud Application Platform)</li>
+                    <li><strong>Backend:</strong> Flask web application with Hugging Face Spaces API integration</li>
+                    <li><strong>Model Hosting:</strong> YOLO ONNX model hosted on <a href="https://huggingface.co/spaces/yeager07/distracted-driving-detection" target="_blank" style="color: #34d399;">Hugging Face Spaces</a></li>
+                    <li><strong>CI/CD:</strong> GitHub Actions for automated deployment pipeline</li>
+                    <li><strong>Containerization:</strong> Docker for consistent deployment environments</li>
+                    <li><strong>API Communication:</strong> Gradio Client for seamless Hugging Face Spaces connectivity</li>
+                </ul>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-code-branch"></i> Deployment Workflow</h3>
+                <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                    <li><strong>Code Push:</strong> Developer pushes code to GitHub repository</li>
+                    <li><strong>GitHub Actions:</strong> Automated CI/CD pipeline triggers on push</li>
+                    <li><strong>Docker Build:</strong> Application containerized with all dependencies</li>
+                    <li><strong>Render Deployment:</strong> Docker image deployed to Render.com infrastructure</li>
+                    <li><strong>HF Spaces API:</strong> Flask backend communicates with Hugging Face model endpoint</li>
+                    <li><strong>Live Application:</strong> Production-ready web app accessible globally</li>
+                </ol>
+            </div>
+
+            <div style="background: rgba(0, 0, 0, 0.2); padding: 2rem; border-radius: 15px; margin: 1.5rem 0;">
+                <h3 style="color: #34d399; margin-bottom: 1rem;"><i class="fas fa-plug"></i> API Integration</h3>
+                <ul style="margin-left: 1.5rem;">
+                    <li><strong>RESTful APIs:</strong> Clean endpoints for image and video detection</li>
+                    <li><strong>Gradio Client:</strong> Python SDK for Hugging Face Spaces communication</li>
+                    <li><strong>Handle File:</strong> Efficient file transfer to remote inference endpoint</li>
+                    <li><strong>Base64 Encoding:</strong> Optimized image transfer for web display</li>
+                    <li><strong>JSON Responses:</strong> Structured data for easy frontend integration</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 1.5rem;">
+                <strong>Live Demo:</strong> 
+                <a href="https://huggingface.co/spaces/yeager07/distracted-driving-detection" target="_blank" style="color: #34d399;">
+                    <i class="fas fa-external-link-alt"></i> Try the Gradio interface on Hugging Face
+                </a>
+            </p>
 
             <h2><i class="fas fa-envelope"></i> Contact & Support</h2>
             <p>For more information, partnership opportunities, API access, or technical support:</p>
