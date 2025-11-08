@@ -527,7 +527,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 **Project Maintainer:** Your Name
 
 - Email: faiyazfahim743@gmail.com
-- LinkedIn: [Your LinkedIn]([#](https://www.linkedin.com/in/fahim-faiyaz))
+- LinkedIn: [https://www.linkedin.com/in/fahim-faiyaz](https://www.linkedin.com/in/fahim-faiyaz)
 
 **Project Links:**
 - Gradio App: [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
