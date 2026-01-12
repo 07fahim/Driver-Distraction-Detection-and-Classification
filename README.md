@@ -25,7 +25,7 @@ https://github.com/user-attachments/assets/e0345bc3-ada0-4ec9-97c4-863a8bb56662
 
 ### Landing Page
 <div align="center">
-<img src="assets/screenshots/landing-page.png" alt="SafeDrive AI Landing Page" width="800"/>
+<img width="1899" height="781" alt="Image" src="https://github.com/user-attachments/assets/52f1e092-3dbd-485e-ac81-189b1d11ef49" />
 
 *Modern, responsive landing page with feature highlights and quick access*
 </div>
