@@ -32,7 +32,7 @@ https://github.com/user-attachments/assets/e0345bc3-ada0-4ec9-97c4-863a8bb56662
 
 ### Image Detection
 <div align="center">
-<img src="assets/screenshots/image-detection.png" alt="Image Detection Interface" width="800"/>
+<img width="1892" height="823" alt="Image" src="https://github.com/user-attachments/assets/db815a6e-bb54-4048-ae83-a258c79c812f" />
 
 *Upload and analyze images with real-time behavior classification and confidence scores*
 </div>
