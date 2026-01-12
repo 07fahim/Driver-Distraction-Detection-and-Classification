@@ -46,7 +46,7 @@ https://github.com/user-attachments/assets/e0345bc3-ada0-4ec9-97c4-863a8bb56662
 
 ### Analytics Dashboard
 <div align="center">
-<img src="assets/screenshots/dashboard.png" alt="Analytics Dashboard" width="800"/>
+<img width="846" height="771" alt="Image" src="https://github.com/user-attachments/assets/9e4d1af1-fe96-4f93-b3dd-4934ae33d145" />
 
 *Comprehensive analytics dashboard with detection statistics, timelines, and insights*
 </div>
