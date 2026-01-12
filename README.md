@@ -13,7 +13,7 @@ AI-powered real-time driver safety monitoring system using advanced computer vis
 
 <div align="center">
 
-https://github.com/user-attachments/assets/YOUR-VIDEO-ID-HERE.mp4
+https://github.com/user-attachments/assets/e0345bc3-ada0-4ec9-97c4-863a8bb56662
 
 *Complete application walkthrough demonstrating real-time detection capabilities*
 
