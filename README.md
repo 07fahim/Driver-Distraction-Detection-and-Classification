@@ -9,6 +9,50 @@ AI-powered real-time driver safety monitoring system using advanced computer vis
 
 ---
 
+## 🎥 Demo Video
+
+<div align="center">
+
+https://github.com/user-attachments/assets/YOUR-VIDEO-ID-HERE.mp4
+
+*Complete application walkthrough demonstrating real-time detection capabilities*
+
+</div>
+
+---
+
+## 📸 Application Screenshots
+
+### Landing Page
+<div align="center">
+<img src="assets/screenshots/landing-page.png" alt="SafeDrive AI Landing Page" width="800"/>
+
+*Modern, responsive landing page with feature highlights and quick access*
+</div>
+
+### Image Detection
+<div align="center">
+<img src="assets/screenshots/image-detection.png" alt="Image Detection Interface" width="800"/>
+
+*Upload and analyze images with real-time behavior classification and confidence scores*
+</div>
+
+### Video Detection
+<div align="center">
+<img src="assets/screenshots/video-detection.png" alt="Video Detection Interface" width="800"/>
+
+*Process video files frame-by-frame with comprehensive behavioral analysis*
+</div>
+
+### Analytics Dashboard
+<div align="center">
+<img src="assets/screenshots/dashboard.png" alt="Analytics Dashboard" width="800"/>
+
+*Comprehensive analytics dashboard with detection statistics, timelines, and insights*
+</div>
+
+---
+
 ## Table of Contents
 
 - [Overview](#overview)
@@ -262,8 +306,8 @@ SafeDrive AI is an advanced computer vision system designed to detect and preven
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/safedrive-ai.git
-cd safedrive-ai
+git clone https://github.com/07fahim/Driver-Distraction-Detection-and-Classification.git
+cd Driver-Distraction-Detection-and-Classification
 
 # Switch to main branch
 git checkout main
@@ -290,8 +334,8 @@ Access at: `http://localhost:7860`
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/safedrive-ai.git
-cd safedrive-ai
+git clone https://github.com/07fahim/Driver-Distraction-Detection-and-Classification.git
+cd Driver-Distraction-Detection-and-Classification
 
 # Switch to flask branch
 git checkout flask
@@ -360,12 +404,6 @@ Video detection returns JSON with video ID and summary statistics including tota
 **Repository:** `main` branch, `deployment/` folder  
 **Runtime:** Python 3.12 with ONNX Runtime  
 
-**Application Demo:**
-
-https://github.com/user-attachments/assets/your-gradio-video-id.mp4
-
-*Interactive Gradio interface demonstration with image and video detection capabilities*
-
 **Deployment Process:**
 1. Code pushed to `main` branch triggers automatic rebuild
 2. Hugging Face Spaces pulls latest changes
@@ -386,13 +424,7 @@ https://github.com/user-attachments/assets/your-gradio-video-id.mp4
 **Container:** Docker with Python 3.12-slim base  
 **Web Server:** Gunicorn with 2 workers, 300-second timeout  
 **CI/CD:** GitHub Actions automated deployment  
-**Live URL:** [Insert Your Render URL Here]
-
-**Application Demo:**
-
-https://github.com/user-attachments/assets/your-flask-video-id.mp4
-
-*Complete Flask web application walkthrough showing all features and detection capabilities*
+**Live URL:** [https://driver-distraction-detection-and.onrender.com](https://driver-distraction-detection-and.onrender.com)
 
 **Deployment Process:**
 1. Code pushed to `flask` branch
@@ -439,10 +471,15 @@ safedrive-ai/
 │   │       ├── mobilenetv2.ipynb
 │   │       ├── resnet50.ipynb
 │   │       └── vgg19.ipynb
-│   └── deployment/                # Gradio app
-│       ├── app.py
-│       ├── best.onnx
-│       └── requirements.txt
+│   ├── deployment/                # Gradio app
+│   │   ├── app.py
+│   │   ├── best.onnx
+│   │   └── requirements.txt
+│   └── assets/                    # Media assets
+│       └── screenshots/
+│           ├── landing-page.png
+│           ├── image-detection.png
+│           └── dashboard.png
 │
 ├── flask/                         # Flask branch
 │   ├── app.py                     # Flask application
@@ -524,12 +561,14 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Contact
 
-**Project Maintainer:** Your Name
+**Project Maintainer:** Fahim Faiyaz
 
 - Email: faiyazfahim743@gmail.com
 - LinkedIn: [https://www.linkedin.com/in/fahim-faiyaz](https://www.linkedin.com/in/fahim-faiyaz)
+- GitHub: [https://github.com/07fahim](https://github.com/07fahim)
 
 **Project Links:**
+- Repository: [https://github.com/07fahim/Driver-Distraction-Detection-and-Classification](https://github.com/07fahim/Driver-Distraction-Detection-and-Classification)
 - Gradio App: [https://huggingface.co/spaces/yeager07/distracted-driving-detection](https://huggingface.co/spaces/yeager07/distracted-driving-detection)
 - Flask App: [https://driver-distraction-detection-and.onrender.com](https://driver-distraction-detection-and.onrender.com)
 - Dataset: [Roboflow Universe](https://universe.roboflow.com/flytech/distracted-driving-v2wk5-f5vtj/dataset/1)
@@ -551,6 +590,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**SafeDrive AI - Drive Safe, Save Lives**
+<div align="center">
 
-Star this repository if you find it helpful.
+**SafeDrive AI - Drive Safe, Save Lives** 🚗💡
+
+[![Star this repository](https://img.shields.io/github/stars/07fahim/Driver-Distraction-Detection-and-Classification?style=social)](https://github.com/07fahim/Driver-Distraction-Detection-and-Classification)
+
+</div>
