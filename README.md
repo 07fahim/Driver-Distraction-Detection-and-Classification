@@ -9,6 +9,28 @@ AI-powered real-time driver safety monitoring system using advanced computer vis
 
 ---
 
+## Table of Contents
+
+- [Demo Video](#-demo-video)
+- [Application Screenshots](#-application-screenshots)
+- [Overview](#overview)
+- [Live Demos](#live-demos)
+- [Features](#features)
+- [Dataset](#dataset)
+- [Model Performance](#model-performance)
+- [Architecture](#architecture)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Deployment](#deployment)
+- [Repository Structure](#repository-structure)
+- [Technologies](#technologies)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+
+---
+
 ## 🎥 Demo Video
 
 <div align="center">
@@ -25,51 +47,31 @@ https://github.com/user-attachments/assets/e0345bc3-ada0-4ec9-97c4-863a8bb56662
 
 ### Landing Page
 <div align="center">
-<img width="1899" height="781" alt="Image" src="https://github.com/user-attachments/assets/52f1e092-3dbd-485e-ac81-189b1d11ef49" />
+<img width="1899" alt="SafeDrive AI Landing Page" src="https://github.com/user-attachments/assets/52f1e092-3dbd-485e-ac81-189b1d11ef49" />
 
 *Modern, responsive landing page with feature highlights and quick access*
 </div>
 
 ### Image Detection
 <div align="center">
-<img width="1892" height="823" alt="Image" src="https://github.com/user-attachments/assets/db815a6e-bb54-4048-ae83-a258c79c812f" />
+<img width="1892" alt="Image Detection Interface" src="https://github.com/user-attachments/assets/db815a6e-bb54-4048-ae83-a258c79c812f" />
 
 *Upload and analyze images with real-time behavior classification and confidence scores*
 </div>
 
 ### Video Detection
 <div align="center">
-<img width="1850" height="810" alt="Image" src="https://github.com/user-attachments/assets/6a4fa4b8-bbbf-4d4f-8d60-faa9b6864888" />
+<img width="1850" alt="Video Detection Interface" src="https://github.com/user-attachments/assets/6a4fa4b8-bbbf-4d4f-8d60-faa9b6864888" />
 
 *Process video files frame-by-frame with comprehensive behavioral analysis*
 </div>
 
 ### Analytics Dashboard
 <div align="center">
-<img width="846" height="771" alt="Image" src="https://github.com/user-attachments/assets/9e4d1af1-fe96-4f93-b3dd-4934ae33d145" />
+<img width="846" alt="Analytics Dashboard" src="https://github.com/user-attachments/assets/9e4d1af1-fe96-4f93-b3dd-4934ae33d145" />
 
 *Comprehensive analytics dashboard with detection statistics, timelines, and insights*
 </div>
-
----
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Live Demos](#live-demos)
-- [Features](#features)
-- [Dataset](#dataset)
-- [Model Performance](#model-performance)
-- [Architecture](#architecture)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Deployment](#deployment)
-- [Repository Structure](#repository-structure)
-- [Technologies](#technologies)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -471,15 +473,10 @@ safedrive-ai/
 │   │       ├── mobilenetv2.ipynb
 │   │       ├── resnet50.ipynb
 │   │       └── vgg19.ipynb
-│   ├── deployment/                # Gradio app
-│   │   ├── app.py
-│   │   ├── best.onnx
-│   │   └── requirements.txt
-│   └── assets/                    # Media assets
-│       └── screenshots/
-│           ├── landing-page.png
-│           ├── image-detection.png
-│           └── dashboard.png
+│   └── deployment/                # Gradio app
+│       ├── app.py
+│       ├── best.onnx
+│       └── requirements.txt
 │
 ├── flask/                         # Flask branch
 │   ├── app.py                     # Flask application
