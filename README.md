@@ -39,7 +39,7 @@ https://github.com/user-attachments/assets/e0345bc3-ada0-4ec9-97c4-863a8bb56662
 
 ### Video Detection
 <div align="center">
-<img src="assets/screenshots/video-detection.png" alt="Video Detection Interface" width="800"/>
+<img width="1850" height="810" alt="Image" src="https://github.com/user-attachments/assets/6a4fa4b8-bbbf-4d4f-8d60-faa9b6864888" />
 
 *Process video files frame-by-frame with comprehensive behavioral analysis*
 </div>
